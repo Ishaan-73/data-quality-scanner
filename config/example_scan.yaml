@@ -1,0 +1,158 @@
+# Data Quality Scanner — Example Scan Configuration
+# Run: dqs scan --config config/example_scan.yaml --mode live
+
+scan_name: example_dqs_scan
+mode: live            # 'live' = Mode A (direct DW connection) | 'synthetic' = Mode B (clone)
+
+# Set to true to run only MVP-phase checks (20 of 33)
+mvp_only: false
+
+# Optional: limit to specific dimensions (empty = run all)
+dimensions: []
+# dimensions: [completeness, uniqueness, validity, freshness]
+
+# ─── Connector ──────────────────────────────────────────────────────────────
+connector:
+  dialect: snowflake
+  account: your_account        # e.g. xy12345.us-east-1
+  username: your_user
+  password: your_password
+  database: MY_DATABASE
+  schema: PUBLIC
+  warehouse: COMPUTE_WH
+  role: SYSADMIN
+
+# For synthetic mode: if you want to profile a different env than where checks run
+# profile_connector:
+#   dialect: snowflake
+#   account: prod_account
+#   ...
+
+# How many synthetic rows to generate (Mode B only)
+synthetic_row_count: 10000
+
+# ─── Checks ─────────────────────────────────────────────────────────────────
+# Only the checks you configure here will run.
+# Set enabled: false to skip a check without removing it.
+
+checks:
+
+  # ── Completeness ──────────────────────────────────────────────────────────
+
+  - check_id: 1             # Null Ratio by Column
+    table: PUBLIC.CUSTOMERS
+    column: email
+
+  - check_id: 2             # Null Ratio in Critical Columns
+    table: PUBLIC.CUSTOMERS
+    columns: [customer_id, email, created_at]
+
+  - check_id: 4             # Conditional Completeness
+    table: PUBLIC.ORDERS
+    condition: "order_type = 'ONLINE'"
+    dependent_column: shipping_address
+
+  # ── Uniqueness ────────────────────────────────────────────────────────────
+
+  - check_id: 5             # Primary Key Duplicate Ratio
+    table: PUBLIC.CUSTOMERS
+    pk_column: customer_id
+
+  - check_id: 6             # Business Key Duplicate Ratio
+    table: PUBLIC.CUSTOMERS
+    business_key_columns: [email]
+
+  - check_id: 7             # Near-Duplicate Candidate Check (advisory)
+    table: PUBLIC.CUSTOMERS
+    columns: [first_name, last_name, email]
+
+  # ── Validity ──────────────────────────────────────────────────────────────
+
+  - check_id: 9             # Allowed Value / Domain Check
+    table: PUBLIC.ORDERS
+    column: status
+    allowed_values: [PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED]
+
+  - check_id: 10            # Format Validation
+    table: PUBLIC.CUSTOMERS
+    column: email
+    pattern: '^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$'
+
+  - check_id: 11            # Range Validation
+    table: PUBLIC.PRODUCTS
+    column: price
+    min_value: 0
+    max_value: 100000
+
+  - check_id: 12            # Negative Value Check
+    table: PUBLIC.ORDERS
+    column: order_total
+
+  # ── Integrity ─────────────────────────────────────────────────────────────
+
+  - check_id: 17            # Foreign Key Violation Check
+    child_table: PUBLIC.ORDERS
+    child_column: customer_id
+    parent_table: PUBLIC.CUSTOMERS
+    parent_column: customer_id
+
+  - check_id: 19            # Broken Join Coverage (higher_is_better, threshold=0.99)
+    source_table: PUBLIC.ORDERS
+    source_column: product_id
+    reference_table: PUBLIC.PRODUCTS
+    reference_column: product_id
+
+  # ── Freshness ─────────────────────────────────────────────────────────────
+
+  - check_id: 20            # Freshness Lag Hours
+    table: PUBLIC.ORDERS
+    timestamp_column: updated_at
+    freshness_sla_hours: 24
+
+  - check_id: 21            # Stale Table Check
+    table: PUBLIC.ORDERS
+    timestamp_column: updated_at
+    stale_days: 1
+
+  # ── Volume ────────────────────────────────────────────────────────────────
+
+  - check_id: 23            # Row Count Volume Change
+    today_table: PUBLIC.ORDERS
+    prior_table: PUBLIC.ORDERS_YESTERDAY    # snapshot table from previous run
+    volume_change_band: 0.30               # threshold: ±30%
+
+  # ── Accuracy (Phase 2) ───────────────────────────────────────────────────
+
+  - check_id: 25            # Source-to-Target Reconciliation
+    enabled: false          # enable once you have source/target tables configured
+    source_table: STAGING.ORDERS_STAGE
+    source_column: order_total
+    target_table: PUBLIC.ORDERS
+    target_column: order_total
+
+  - check_id: 26            # Business Rule Validation
+    table: PUBLIC.ORDER_ITEMS
+    price_column: unit_price
+    quantity_column: quantity
+    revenue_column: line_total
+
+  # ── Anomaly (Phase 2, advisory) ───────────────────────────────────────────
+
+  - check_id: 28            # Outlier Detection (advisory)
+    table: PUBLIC.ORDERS
+    column: order_total
+    outlier_z_threshold: 3.0
+
+  # ── Schema (Phase 2) ─────────────────────────────────────────────────────
+
+  - check_id: 30            # Schema Drift Detection
+    enabled: false          # enable once you have a baseline snapshot table
+    table: PUBLIC.CUSTOMERS
+    reference_table: DQS_SCHEMA_BASELINE
+
+  # ── Pipeline (Phase 2) ───────────────────────────────────────────────────
+
+  - check_id: 32            # Pipeline Failure Indicator
+    enabled: false
+    pipeline_runs_table: MONITORING.PIPELINE_RUNS
+    dataset_name: CUSTOMERS
