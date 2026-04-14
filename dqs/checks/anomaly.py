@@ -21,7 +21,7 @@ class OutlierDetection(BaseCheck):
     dimension = "anomaly"
     metric_name = "outlier_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         col = config.metric_column or config.column
         table = config.table
         z = config.outlier_z_threshold if config.outlier_z_threshold else 3.0
@@ -60,7 +60,7 @@ class DistributionDriftCheck(BaseCheck):
     dimension = "anomaly"
     metric_name = "distribution_drift_score"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         col = config.metric_column or config.column
         table = config.table
         baseline_table = config.reference_table

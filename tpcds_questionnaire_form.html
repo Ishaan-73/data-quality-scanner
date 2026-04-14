@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DQS Questionnaire — tpcds_wizard_run</title>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<style>
+  :root{--blue:#1B3D6F;--green:#47A848;--light:#F0F4F8;--border:#D1DCE8;--text:#1a2433;--muted:#64748b;--red:#dc2626}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--light);color:var(--text);font-size:14px}
+  header{background:var(--blue);color:#fff;padding:18px 32px}
+  header h1{font-size:20px;font-weight:700;margin-bottom:4px}
+  header p{font-size:13px;opacity:.7}
+  .container{max-width:1100px;margin:0 auto;padding:24px 16px 100px}
+  .intro{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:24px;line-height:1.7}
+  .intro h2{font-size:15px;color:var(--blue);margin-bottom:8px}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600}
+  .pill-todo{background:#FEF3C7;color:#92400E}
+  .pill-auto{background:#D1FAE5;color:#065F46}
+  .pill-optional{background:#E0E7FF;color:#3730A3}
+  .tbl-card{background:#fff;border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden}
+  .tbl-header{background:var(--blue);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+  .tbl-header h2{font-size:15px;font-weight:600}
+  .chevron{transition:transform .2s}
+  .tbl-header.open .chevron{transform:rotate(180deg)}
+  .tbl-body{padding:20px;display:none}
+  .tbl-body.open{display:block}
+  .sub{margin-bottom:22px}
+  .sub-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .sub-title::after{content:'';flex:1;height:1px;background:var(--border)}
+  .field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .field{background:var(--light);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .field label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;background:#fff;color:var(--text);font-family:inherit}
+  .field input:focus,.field select:focus{outline:2px solid var(--green);border-color:var(--green)}
+  .field .hint{font-size:11px;color:var(--muted);margin-top:4px}
+  .rep-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .rep-row input{flex:1;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px}
+  .rep-row button{flex-shrink:0;background:none;border:1px solid var(--border);border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--muted)}
+  .rep-row button:hover{background:#fee2e2;color:var(--red);border-color:var(--red)}
+  .add-btn{background:none;border:1px dashed var(--green);border-radius:6px;padding:6px 14px;color:var(--green);font-size:12px;cursor:pointer;font-weight:600;margin-top:4px}
+  .add-btn:hover{background:#f0fdf4}
+  .action-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;gap:12px;z-index:100}
+  .btn-primary{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-primary:hover{background:#3a9139}
+  .btn-secondary{background:#fff;color:var(--blue);border:2px solid var(--blue);border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
+  .btn-secondary:hover{background:var(--light)}
+  #statusMsg{font-size:13px;color:var(--muted);margin-left:auto}
+</style>
+</head>
+<body>
+<header>
+  <h1>GovernIQ &nbsp;·&nbsp; DQS Client Questionnaire</h1>
+  <p>Scan: tpcds_wizard_run &nbsp;·&nbsp; Fill in highlighted fields, then click Download YAML</p>
+</header>
+
+<div class="container">
+  <div class="intro">
+    <h2>Instructions</h2>
+    Fields marked <span class="pill pill-auto">Auto-discovered</span> were pre-filled from your schema — please verify.<br>
+    Fields marked <span class="pill pill-todo">TODO</span> need your business knowledge — these unlock the highest-impact AI-readiness checks.<br>
+    Fields marked <span class="pill pill-optional">Optional</span> add value but can be skipped.<br><br>
+    When done: click <strong>Download YAML</strong>, then share the file with your DQS engineer who will run:<br>
+    <code style="background:#F0F4F8;padding:3px 10px;border-radius:4px;font-size:12px;display:inline-block;margin-top:6px">
+      dqs generate-config --questionnaire questionnaire_filled.yaml --out scan_config.yaml
+    </code>
+  </div>
+
+  <div id="tables">
+
+  <div class="tbl-card">
+    <div class="tbl-header" id="hdr_0">
+      <h2>store_sales<span style='font-size:12px;opacity:.7;margin-left:8px'>0 categorical · 2 numeric · 0 timestamp</span></h2>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="tbl-body" id="body_0">
+
+      <div class="sub">
+        <div class="sub-title">Table Role <span class="pill pill-todo">TODO</span></div>
+        
+      <div class="field" style="max-width:340px">
+        <label>AI / ML Role</label>
+        <select data-table="0" data-field="ai_role" data-field="ai_role">
+          <option value="unknown" selected>unknown</option>
+<option value="training_data" >training_data</option>
+<option value="feature_store" >feature_store</option>
+<option value="target_variable" >target_variable</option>
+<option value="reference" >reference</option>
+<option value="operational" >operational</option>
+        </select>
+        <div class="hint">What does this table feed into?</div>
+      </div>
+      </div>
+
+      
+      <div class="sub">
+        <div class="sub-title">ID / Key Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>ss_sold_date_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_sold_time_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_item_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_customer_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_cdemo_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_hdemo_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_addr_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_store_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>ss_promo_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Monetary Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>ss_wholesale_cost <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_wholesale_cost) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="0" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="0" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_list_price <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_list_price) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="1" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="1" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_sales_price <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_sales_price) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="2" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="2" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_ext_discount_amt <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_ext_discount_amt) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="3" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="3" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_ext_sales_price <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_ext_sales_price) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="4" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="4" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_ext_wholesale_cost <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_ext_wholesale_cost) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="5" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="5" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_ext_list_price <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_ext_list_price) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="6" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="6" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_ext_tax <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_ext_tax) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="7" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="7" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_net_paid <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_net_paid) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="8" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="8" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_net_paid_inc_tax <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_net_paid_inc_tax) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="9" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="9" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>ss_net_profit <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for ss_net_profit) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="10" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="0" data-field="monetary_columns" data-col="10" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div></div>
+      </div>
+      
+      
+      <div class="sub">
+        <div class="sub-title">Numeric Columns — Ranges</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>ss_ticket_number <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="0" data-field="numeric_columns" data-col="0" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="0" data-field="numeric_columns" data-col="0" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="0" data-field="numeric_columns" data-col="0" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>ss_quantity <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="0" data-field="numeric_columns" data-col="1" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="0" data-field="numeric_columns" data-col="1" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="0" data-field="numeric_columns" data-col="1" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div></div>
+      </div>
+      
+      
+      <div class="sub">
+        <div class="sub-title">Foreign Keys <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          Enables FK violation (ID 17), orphan (ID 18), and join coverage (ID 19) checks.<br>
+          Format: <em>column → references_table.references_column</em>
+        </div>
+        <div id="rep_fk_0" data-rep-table="0" data-rep-field="foreign_keys"></div>
+        <button class="add-btn" onclick="addFKRow('rep_fk_0')">+ add foreign key</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Business Rules <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          SQL expressions that must always be TRUE. Enables check ID 26.<br>
+          Examples: <em>net_paid = sales_price * quantity</em> &nbsp;·&nbsp; <em>discount_pct BETWEEN 0 AND 100</em>
+        </div>
+        <div id="rep_rules_0" data-rep-table="0" data-rep-field="business_rules"></div>
+        <button class="add-btn" onclick="addRuleRow('rep_rules_0')">+ add rule</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Conditional Completeness <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          "When [condition] is true, [column] must not be null." Enables check ID 4.
+        </div>
+        <div id="rep_cc_0" data-rep-table="0" data-rep-field="conditional_completeness"></div>
+        <button class="add-btn" onclick="addCCRow('rep_cc_0')">+ add condition</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Volume Monitoring <span class="pill pill-optional">Optional</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Max daily row-count change (%)</label>
+            <input type="number" step="1" min="1" max="100" value="30"
+              data-table="0" data-field="volume_change_pct"/>
+            <div class="hint">Alert if row count grows/shrinks by more than this. Enables check ID 23.</div>
+          </div>
+          <div class="field">
+            <label>Yesterday's snapshot table <span class="pill pill-optional">Optional</span></label>
+            <input type="text" placeholder="schema.table_yesterday"
+              value=""
+              data-table="0" data-field="prior_table"/>
+            <div class="hint">Required for volume change check (ID 23). Leave blank if unavailable.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tbl-card">
+    <div class="tbl-header" id="hdr_1">
+      <h2>customer<span style='font-size:12px;opacity:.7;margin-left:8px'>3 categorical · 4 numeric · 0 timestamp</span></h2>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="tbl-body" id="body_1">
+
+      <div class="sub">
+        <div class="sub-title">Table Role <span class="pill pill-todo">TODO</span></div>
+        
+      <div class="field" style="max-width:340px">
+        <label>AI / ML Role</label>
+        <select data-table="1" data-field="ai_role" data-field="ai_role">
+          <option value="unknown" selected>unknown</option>
+<option value="training_data" >training_data</option>
+<option value="feature_store" >feature_store</option>
+<option value="target_variable" >target_variable</option>
+<option value="reference" >reference</option>
+<option value="operational" >operational</option>
+        </select>
+        <div class="hint">What does this table feed into?</div>
+      </div>
+      </div>
+
+      
+      <div class="sub">
+        <div class="sub-title">ID / Key Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>c_customer_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_customer_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_current_cdemo_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_current_hdemo_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_current_addr_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_first_shipto_date_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_first_sales_date_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>c_last_review_date_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div></div>
+      </div>
+      
+      
+      <div class="sub">
+        <div class="sub-title">Categorical Columns — Allowed Values</div>
+        <div class="field-grid">
+        <div class="field" style="grid-column:span 1">
+          <label>c_salutation — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_1_0"><div class="rep-row"><input type="text" value="Dr."/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Sir"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Mr."/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Miss"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Ms."/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Mrs."/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_1_0')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="categorical_columns" data-col="0" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>c_preferred_cust_flag — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_1_1"><div class="rep-row"><input type="text" value="N"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Y"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_1_1')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="categorical_columns" data-col="1" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>c_login — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_1_2"><div class="rep-row"><input type="text" value=""/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_1_2')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="categorical_columns" data-col="2" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Numeric Columns — Ranges</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>c_birth_day <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="0" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="0" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="numeric_columns" data-col="0" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>c_birth_month <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="1" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="1" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="numeric_columns" data-col="1" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>c_birth_year <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="2" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="2" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="numeric_columns" data-col="2" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>c_birth_country <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="3" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="1" data-field="numeric_columns" data-col="3" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="1" data-field="numeric_columns" data-col="3" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div></div>
+      </div>
+      
+      
+      <div class="sub">
+        <div class="sub-title">Foreign Keys <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          Enables FK violation (ID 17), orphan (ID 18), and join coverage (ID 19) checks.<br>
+          Format: <em>column → references_table.references_column</em>
+        </div>
+        <div id="rep_fk_1" data-rep-table="1" data-rep-field="foreign_keys"></div>
+        <button class="add-btn" onclick="addFKRow('rep_fk_1')">+ add foreign key</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Business Rules <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          SQL expressions that must always be TRUE. Enables check ID 26.<br>
+          Examples: <em>net_paid = sales_price * quantity</em> &nbsp;·&nbsp; <em>discount_pct BETWEEN 0 AND 100</em>
+        </div>
+        <div id="rep_rules_1" data-rep-table="1" data-rep-field="business_rules"></div>
+        <button class="add-btn" onclick="addRuleRow('rep_rules_1')">+ add rule</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Conditional Completeness <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          "When [condition] is true, [column] must not be null." Enables check ID 4.
+        </div>
+        <div id="rep_cc_1" data-rep-table="1" data-rep-field="conditional_completeness"></div>
+        <button class="add-btn" onclick="addCCRow('rep_cc_1')">+ add condition</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Volume Monitoring <span class="pill pill-optional">Optional</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Max daily row-count change (%)</label>
+            <input type="number" step="1" min="1" max="100" value="30"
+              data-table="1" data-field="volume_change_pct"/>
+            <div class="hint">Alert if row count grows/shrinks by more than this. Enables check ID 23.</div>
+          </div>
+          <div class="field">
+            <label>Yesterday's snapshot table <span class="pill pill-optional">Optional</span></label>
+            <input type="text" placeholder="schema.table_yesterday"
+              value=""
+              data-table="1" data-field="prior_table"/>
+            <div class="hint">Required for volume change check (ID 23). Leave blank if unavailable.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tbl-card">
+    <div class="tbl-header" id="hdr_2">
+      <h2>item<span style='font-size:12px;opacity:.7;margin-left:8px'>3 categorical · 2 numeric · 2 timestamp</span></h2>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="tbl-body" id="body_2">
+
+      <div class="sub">
+        <div class="sub-title">Table Role <span class="pill pill-todo">TODO</span></div>
+        
+      <div class="field" style="max-width:340px">
+        <label>AI / ML Role</label>
+        <select data-table="2" data-field="ai_role" data-field="ai_role">
+          <option value="unknown" selected>unknown</option>
+<option value="training_data" >training_data</option>
+<option value="feature_store" >feature_store</option>
+<option value="target_variable" >target_variable</option>
+<option value="reference" >reference</option>
+<option value="operational" >operational</option>
+        </select>
+        <div class="hint">What does this table feed into?</div>
+      </div>
+      </div>
+
+      
+      <div class="sub">
+        <div class="sub-title">ID / Key Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>i_item_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>i_item_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>i_brand_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>i_class_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>i_category_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>i_manufact_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Monetary Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>i_current_price <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for i_current_price) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="2" data-field="monetary_columns" data-col="0" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="2" data-field="monetary_columns" data-col="0" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div>
+        <div class="field">
+          <label>i_wholesale_cost <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Monetary column" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">No-negative check (ID 12) runs automatically</div>
+        </div>
+        <div class="field">
+          <label>Currency column (for i_wholesale_cost) <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="e.g. currency_code"
+            value=""
+            data-table="2" data-field="monetary_columns" data-col="1" data-sub="currency_column"/>
+          <div class="hint">Sibling column holding the currency code</div>
+        </div>
+        <div class="field">
+          <label>Valid currencies <span class="pill pill-optional">Optional</span></label>
+          <input type="text" placeholder="USD, EUR, GBP"
+            value=""
+            data-table="2" data-field="monetary_columns" data-col="1" data-sub="valid_currencies_csv"/>
+          <div class="hint">Enables check ID 15 — comma-separated</div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Categorical Columns — Allowed Values</div>
+        <div class="field-grid">
+        <div class="field" style="grid-column:span 1">
+          <label>i_category — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_2_0"><div class="rep-row"><input type="text" value="Women"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Men"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Electronics"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Jewelry"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Books"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Music"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Children"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Shoes"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Home"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Sports"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_2_0')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="2" data-field="categorical_columns" data-col="0" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>i_units — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_2_1"><div class="rep-row"><input type="text" value="Bundle"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Gross"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Tsp"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Pallet"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Dram"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Ton"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Ounce"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Cup"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Tbl"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Bunch"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Oz"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Carton"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="N/A"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Pound"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Gram"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Lb"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Each"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Box"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Unknown"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Case"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_2_1')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="2" data-field="categorical_columns" data-col="1" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>i_container — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_2_2"><div class="rep-row"><input type="text" value="Unknown"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_2_2')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="2" data-field="categorical_columns" data-col="2" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Numeric Columns — Ranges</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>i_size <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="2" data-field="numeric_columns" data-col="0" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="2" data-field="numeric_columns" data-col="0" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="2" data-field="numeric_columns" data-col="0" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>i_manager_id <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="2" data-field="numeric_columns" data-col="1" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="2" data-field="numeric_columns" data-col="1" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="2" data-field="numeric_columns" data-col="1" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Timestamp Columns — Freshness &amp; Ordering</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>i_rec_start_date <span class="pill pill-todo">TODO</span></label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Freshness SLA (hours)</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 24"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="0" data-sub="freshness_sla_hours"/>
+            <div class="hint">Enables freshness (ID 20) and stale table (ID 21) checks</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px">
+            <input type="checkbox" 
+              data-table="2" data-field="timestamp_columns" data-col="0" data-sub="is_event_time"/>
+            This is an event timestamp (when the event actually happened)
+          </label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Max late-arrival lag (hours) — if event timestamp</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 6"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="0" data-sub="late_arrival_hours"/>
+            <div class="hint">Enables late-arriving data check (ID 22)</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--muted)">Must be after column (chronological order)</span>
+            <input type="text" placeholder="e.g. created_at"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="0" data-sub="must_be_after"/>
+            <div class="hint">Enables cross-field consistency check (ID 13)</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>i_rec_end_date <span class="pill pill-todo">TODO</span></label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Freshness SLA (hours)</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 24"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="1" data-sub="freshness_sla_hours"/>
+            <div class="hint">Enables freshness (ID 20) and stale table (ID 21) checks</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px">
+            <input type="checkbox" 
+              data-table="2" data-field="timestamp_columns" data-col="1" data-sub="is_event_time"/>
+            This is an event timestamp (when the event actually happened)
+          </label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Max late-arrival lag (hours) — if event timestamp</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 6"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="1" data-sub="late_arrival_hours"/>
+            <div class="hint">Enables late-arriving data check (ID 22)</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--muted)">Must be after column (chronological order)</span>
+            <input type="text" placeholder="e.g. created_at"
+              value=""
+              data-table="2" data-field="timestamp_columns" data-col="1" data-sub="must_be_after"/>
+            <div class="hint">Enables cross-field consistency check (ID 13)</div>
+          </div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Foreign Keys <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          Enables FK violation (ID 17), orphan (ID 18), and join coverage (ID 19) checks.<br>
+          Format: <em>column → references_table.references_column</em>
+        </div>
+        <div id="rep_fk_2" data-rep-table="2" data-rep-field="foreign_keys"></div>
+        <button class="add-btn" onclick="addFKRow('rep_fk_2')">+ add foreign key</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Business Rules <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          SQL expressions that must always be TRUE. Enables check ID 26.<br>
+          Examples: <em>net_paid = sales_price * quantity</em> &nbsp;·&nbsp; <em>discount_pct BETWEEN 0 AND 100</em>
+        </div>
+        <div id="rep_rules_2" data-rep-table="2" data-rep-field="business_rules"></div>
+        <button class="add-btn" onclick="addRuleRow('rep_rules_2')">+ add rule</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Conditional Completeness <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          "When [condition] is true, [column] must not be null." Enables check ID 4.
+        </div>
+        <div id="rep_cc_2" data-rep-table="2" data-rep-field="conditional_completeness"></div>
+        <button class="add-btn" onclick="addCCRow('rep_cc_2')">+ add condition</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Volume Monitoring <span class="pill pill-optional">Optional</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Max daily row-count change (%)</label>
+            <input type="number" step="1" min="1" max="100" value="30"
+              data-table="2" data-field="volume_change_pct"/>
+            <div class="hint">Alert if row count grows/shrinks by more than this. Enables check ID 23.</div>
+          </div>
+          <div class="field">
+            <label>Yesterday's snapshot table <span class="pill pill-optional">Optional</span></label>
+            <input type="text" placeholder="schema.table_yesterday"
+              value=""
+              data-table="2" data-field="prior_table"/>
+            <div class="hint">Required for volume change check (ID 23). Leave blank if unavailable.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="tbl-card">
+    <div class="tbl-header" id="hdr_3">
+      <h2>date_dim<span style='font-size:12px;opacity:.7;margin-left:8px'>10 categorical · 11 numeric · 2 timestamp</span></h2>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="tbl-body" id="body_3">
+
+      <div class="sub">
+        <div class="sub-title">Table Role <span class="pill pill-todo">TODO</span></div>
+        
+      <div class="field" style="max-width:340px">
+        <label>AI / ML Role</label>
+        <select data-table="3" data-field="ai_role" data-field="ai_role">
+          <option value="unknown" selected>unknown</option>
+<option value="training_data" >training_data</option>
+<option value="feature_store" >feature_store</option>
+<option value="target_variable" >target_variable</option>
+<option value="reference" >reference</option>
+<option value="operational" >operational</option>
+        </select>
+        <div class="hint">What does this table feed into?</div>
+      </div>
+      </div>
+
+      
+      <div class="sub">
+        <div class="sub-title">ID / Key Columns <span class="pill pill-auto">Auto-discovered</span></div>
+        <div class="field-grid">
+        <div class="field">
+          <label>d_date_sk <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Primary Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div>
+        <div class="field">
+          <label>d_date_id <span class="pill pill-auto">Auto-discovered</span></label>
+          <input type="text" value="Business Key" readonly style="background:#f8fafc;color:var(--muted)"/>
+          <div class="hint">Will run uniqueness checks (IDs 5, 6, 7)</div>
+        </div></div>
+      </div>
+      
+      
+      <div class="sub">
+        <div class="sub-title">Categorical Columns — Allowed Values</div>
+        <div class="field-grid">
+        <div class="field" style="grid-column:span 1">
+          <label>d_quarter_seq — valid values <span class="pill pill-todo">TODO</span></label>
+          <div id="rep_categorical_columns_3_0"></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_0')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="0" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_dow — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_1"><div class="rep-row"><input type="text" value="4"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="1"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="2"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value=""/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="3"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="5"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="6"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_1')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="1" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_moy — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_2"><div class="rep-row"><input type="text" value="1"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="3"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="5"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="7"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="8"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="10"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="12"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="4"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="6"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="9"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="11"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="2"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_2')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="2" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_dom — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_3"><div class="rep-row"><input type="text" value="1"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="2"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="3"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="4"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="5"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="6"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="7"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="8"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="9"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="10"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="11"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="12"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="13"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="14"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="15"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="16"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="17"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="18"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="19"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="20"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_3')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="3" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_qoy — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_4"><div class="rep-row"><input type="text" value="3"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="4"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="2"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="1"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_4')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="4" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_fy_quarter_seq — valid values <span class="pill pill-todo">TODO</span></label>
+          <div id="rep_categorical_columns_3_5"></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_5')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="5" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_quarter_name — valid values <span class="pill pill-todo">TODO</span></label>
+          <div id="rep_categorical_columns_3_6"></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_6')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="6" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_weekend — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_7"><div class="rep-row"><input type="text" value="N"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Y"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_7')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="7" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_current_week — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_8"><div class="rep-row"><input type="text" value="N"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_8')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="8" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div>
+        <div class="field" style="grid-column:span 1">
+          <label>d_current_quarter — valid values <span class="pill pill-auto">Auto-discovered</span></label>
+          <div id="rep_categorical_columns_3_9"><div class="rep-row"><input type="text" value="N"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div><div class="rep-row"><input type="text" value="Y"/><button onclick="this.parentElement.remove()" title="Remove">✕</button></div></div>
+          <button class="add-btn" onclick="addRow('rep_categorical_columns_3_9')">+ add value</button>
+          <div class="hint">Enables allowed-value check (ID 9). Verify auto-filled values.</div>
+          <label style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="categorical_columns" data-col="9" data-sub="standardize"/>
+            Also check case/trim standardization (ID 16)
+          </label>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Numeric Columns — Ranges</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>d_month_seq <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="0" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="0" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="0" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_year <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="1" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="1" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="1" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_fy_year <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="2" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="2" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="2" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_day_name <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="3" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="3" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="3" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_holiday <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="4" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="4" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="4" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_following_holiday <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="5" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="5" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="5" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_same_day_ly <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="6" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="6" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="6" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_same_day_lq <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="7" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="7" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="7" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_current_day <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="8" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="8" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="8" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_current_month <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="9" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="9" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="9" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div>
+        <div class="field">
+          <label>d_current_year <span class="pill pill-todo">TODO</span></label>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <input type="number" step="any" placeholder="min"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="10" data-sub="min"
+              style="flex:1"/>
+            <input type="number" step="any" placeholder="max"
+              value=""
+              data-table="3" data-field="numeric_columns" data-col="10" data-sub="max"
+              style="flex:1"/>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px">
+            <input type="checkbox" 
+              data-table="3" data-field="numeric_columns" data-col="10" data-sub="must_be_positive"/>
+            Must be ≥ 0 (no negatives check — ID 12)
+          </label>
+          <div class="hint">Enables range check (ID 11). Leave blank if unknown.</div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Timestamp Columns — Freshness &amp; Ordering</div>
+        <div class="field-grid">
+        <div class="field">
+          <label>d_date_id <span class="pill pill-todo">TODO</span></label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Freshness SLA (hours)</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 24"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="0" data-sub="freshness_sla_hours"/>
+            <div class="hint">Enables freshness (ID 20) and stale table (ID 21) checks</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px">
+            <input type="checkbox" 
+              data-table="3" data-field="timestamp_columns" data-col="0" data-sub="is_event_time"/>
+            This is an event timestamp (when the event actually happened)
+          </label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Max late-arrival lag (hours) — if event timestamp</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 6"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="0" data-sub="late_arrival_hours"/>
+            <div class="hint">Enables late-arriving data check (ID 22)</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--muted)">Must be after column (chronological order)</span>
+            <input type="text" placeholder="e.g. created_at"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="0" data-sub="must_be_after"/>
+            <div class="hint">Enables cross-field consistency check (ID 13)</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>d_date <span class="pill pill-todo">TODO</span></label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Freshness SLA (hours)</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 24"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="1" data-sub="freshness_sla_hours"/>
+            <div class="hint">Enables freshness (ID 20) and stale table (ID 21) checks</div>
+          </div>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:6px">
+            <input type="checkbox" 
+              data-table="3" data-field="timestamp_columns" data-col="1" data-sub="is_event_time"/>
+            This is an event timestamp (when the event actually happened)
+          </label>
+          <div style="margin-bottom:6px">
+            <span style="font-size:11px;color:var(--muted)">Max late-arrival lag (hours) — if event timestamp</span>
+            <input type="number" step="1" min="1" placeholder="e.g. 6"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="1" data-sub="late_arrival_hours"/>
+            <div class="hint">Enables late-arriving data check (ID 22)</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:var(--muted)">Must be after column (chronological order)</span>
+            <input type="text" placeholder="e.g. created_at"
+              value=""
+              data-table="3" data-field="timestamp_columns" data-col="1" data-sub="must_be_after"/>
+            <div class="hint">Enables cross-field consistency check (ID 13)</div>
+          </div>
+        </div></div>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Foreign Keys <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          Enables FK violation (ID 17), orphan (ID 18), and join coverage (ID 19) checks.<br>
+          Format: <em>column → references_table.references_column</em>
+        </div>
+        <div id="rep_fk_3" data-rep-table="3" data-rep-field="foreign_keys"></div>
+        <button class="add-btn" onclick="addFKRow('rep_fk_3')">+ add foreign key</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Business Rules <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          SQL expressions that must always be TRUE. Enables check ID 26.<br>
+          Examples: <em>net_paid = sales_price * quantity</em> &nbsp;·&nbsp; <em>discount_pct BETWEEN 0 AND 100</em>
+        </div>
+        <div id="rep_rules_3" data-rep-table="3" data-rep-field="business_rules"></div>
+        <button class="add-btn" onclick="addRuleRow('rep_rules_3')">+ add rule</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Conditional Completeness <span class="pill pill-todo">TODO</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+          "When [condition] is true, [column] must not be null." Enables check ID 4.
+        </div>
+        <div id="rep_cc_3" data-rep-table="3" data-rep-field="conditional_completeness"></div>
+        <button class="add-btn" onclick="addCCRow('rep_cc_3')">+ add condition</button>
+      </div>
+      
+      <div class="sub">
+        <div class="sub-title">Volume Monitoring <span class="pill pill-optional">Optional</span></div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Max daily row-count change (%)</label>
+            <input type="number" step="1" min="1" max="100" value="30"
+              data-table="3" data-field="volume_change_pct"/>
+            <div class="hint">Alert if row count grows/shrinks by more than this. Enables check ID 23.</div>
+          </div>
+          <div class="field">
+            <label>Yesterday's snapshot table <span class="pill pill-optional">Optional</span></label>
+            <input type="text" placeholder="schema.table_yesterday"
+              value=""
+              data-table="3" data-field="prior_table"/>
+            <div class="hint">Required for volume change check (ID 23). Leave blank if unavailable.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="action-bar">
+  <button class="btn-primary" onclick="downloadYAML()">⬇ Download Completed YAML</button>
+  <button class="btn-secondary" onclick="expandAll()">Expand All</button>
+  <button class="btn-secondary" onclick="collapseAll()">Collapse All</button>
+  <span id="statusMsg"></span>
+</div>
+
+<script>
+const SEED = {
+  "_instructions": "Fill in every field marked '# TODO'. Leave null/[] where you have no information. Then run:  dqs generate-config --questionnaire <this_file> --out scan_config.yaml",
+  "meta": {
+    "scan_name": "tpcds_wizard_run",
+    "connector": {
+      "dialect": "duckdb",
+      "duckdb_path": "test/tpcds_dirty.duckdb"
+    }
+  },
+  "tables": [
+    {
+      "name": "store_sales",
+      "ai_role": "unknown",
+      "id_columns": [
+        {
+          "column": "ss_sold_date_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_sold_time_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_item_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_customer_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_cdemo_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_hdemo_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_addr_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_store_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "ss_promo_sk",
+          "is_primary_key": true
+        }
+      ],
+      "monetary_columns": [
+        {
+          "column": "ss_wholesale_cost",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_list_price",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_sales_price",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_ext_discount_amt",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_ext_sales_price",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_ext_wholesale_cost",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_ext_list_price",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_ext_tax",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_net_paid",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_net_paid_inc_tax",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "ss_net_profit",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        }
+      ],
+      "categorical_columns": [],
+      "numeric_columns": [
+        {
+          "column": "ss_ticket_number",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "ss_quantity",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        }
+      ],
+      "timestamp_columns": [],
+      "foreign_keys": [],
+      "business_rules": [],
+      "conditional_completeness": [],
+      "volume": {
+        "max_daily_change_pct": 30,
+        "prior_table": null
+      },
+      "_idx": 0
+    },
+    {
+      "name": "customer",
+      "ai_role": "unknown",
+      "id_columns": [
+        {
+          "column": "c_customer_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_customer_id",
+          "is_business_key": true
+        },
+        {
+          "column": "c_current_cdemo_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_current_hdemo_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_current_addr_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_first_shipto_date_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_first_sales_date_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "c_last_review_date_sk",
+          "is_primary_key": true
+        }
+      ],
+      "monetary_columns": [],
+      "categorical_columns": [
+        {
+          "column": "c_salutation",
+          "valid_values": [
+            "Dr.",
+            "Sir",
+            "Mr.",
+            "Miss",
+            "Ms.",
+            "Mrs."
+          ],
+          "standardize": false
+        },
+        {
+          "column": "c_preferred_cust_flag",
+          "valid_values": [
+            "N",
+            "Y"
+          ],
+          "standardize": false
+        },
+        {
+          "column": "c_login",
+          "valid_values": [
+            ""
+          ],
+          "standardize": false
+        }
+      ],
+      "numeric_columns": [
+        {
+          "column": "c_birth_day",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "c_birth_month",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "c_birth_year",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "c_birth_country",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        }
+      ],
+      "timestamp_columns": [],
+      "foreign_keys": [],
+      "business_rules": [],
+      "conditional_completeness": [],
+      "volume": {
+        "max_daily_change_pct": 30,
+        "prior_table": null
+      },
+      "_idx": 1
+    },
+    {
+      "name": "item",
+      "ai_role": "unknown",
+      "id_columns": [
+        {
+          "column": "i_item_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "i_item_id",
+          "is_business_key": true
+        },
+        {
+          "column": "i_brand_id",
+          "is_business_key": true
+        },
+        {
+          "column": "i_class_id",
+          "is_business_key": true
+        },
+        {
+          "column": "i_category_id",
+          "is_business_key": true
+        },
+        {
+          "column": "i_manufact_id",
+          "is_business_key": true
+        }
+      ],
+      "monetary_columns": [
+        {
+          "column": "i_current_price",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        },
+        {
+          "column": "i_wholesale_cost",
+          "must_be_positive": true,
+          "currency_column": null,
+          "valid_currencies": []
+        }
+      ],
+      "categorical_columns": [
+        {
+          "column": "i_category",
+          "valid_values": [
+            "Women",
+            "Men",
+            "Electronics",
+            "Jewelry",
+            "Books",
+            "Music",
+            "Children",
+            "Shoes",
+            "Home",
+            "Sports"
+          ],
+          "standardize": false
+        },
+        {
+          "column": "i_units",
+          "valid_values": [
+            "Bundle",
+            "Gross",
+            "Tsp",
+            "Pallet",
+            "Dram",
+            "Ton",
+            "Ounce",
+            "Cup",
+            "Tbl",
+            "Bunch",
+            "Oz",
+            "Carton",
+            "N/A",
+            "Pound",
+            "Gram",
+            "Lb",
+            "Each",
+            "Box",
+            "Unknown",
+            "Case"
+          ],
+          "standardize": false
+        },
+        {
+          "column": "i_container",
+          "valid_values": [
+            "Unknown"
+          ],
+          "standardize": false
+        }
+      ],
+      "numeric_columns": [
+        {
+          "column": "i_size",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "i_manager_id",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        }
+      ],
+      "timestamp_columns": [
+        {
+          "column": "i_rec_start_date",
+          "freshness_sla_hours": null,
+          "is_event_time": false,
+          "late_arrival_hours": null,
+          "must_be_after": null
+        },
+        {
+          "column": "i_rec_end_date",
+          "freshness_sla_hours": null,
+          "is_event_time": false,
+          "late_arrival_hours": null,
+          "must_be_after": null
+        }
+      ],
+      "foreign_keys": [],
+      "business_rules": [],
+      "conditional_completeness": [],
+      "volume": {
+        "max_daily_change_pct": 30,
+        "prior_table": null
+      },
+      "_idx": 2
+    },
+    {
+      "name": "date_dim",
+      "ai_role": "unknown",
+      "id_columns": [
+        {
+          "column": "d_date_sk",
+          "is_primary_key": true
+        },
+        {
+          "column": "d_date_id",
+          "is_business_key": true
+        }
+      ],
+      "monetary_columns": [],
+      "categorical_columns": [
+        {
+          "column": "d_quarter_seq",
+          "valid_values": null,
+          "standardize": false
+        },
+        {
+          "column": "d_dow",
+          "valid_values": [
+            4,
+            1,
+            2,
+            0,
+            3,
+            5,
+            6
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_moy",
+          "valid_values": [
+            1,
+            3,
+            5,
+            7,
+            8,
+            10,
+            12,
+            4,
+            6,
+            9,
+            11,
+            2
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_dom",
+          "valid_values": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_qoy",
+          "valid_values": [
+            3,
+            4,
+            2,
+            1
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_fy_quarter_seq",
+          "valid_values": null,
+          "standardize": false
+        },
+        {
+          "column": "d_quarter_name",
+          "valid_values": null,
+          "standardize": false
+        },
+        {
+          "column": "d_weekend",
+          "valid_values": [
+            "N",
+            "Y"
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_current_week",
+          "valid_values": [
+            "N"
+          ],
+          "standardize": false
+        },
+        {
+          "column": "d_current_quarter",
+          "valid_values": [
+            "N",
+            "Y"
+          ],
+          "standardize": false
+        }
+      ],
+      "numeric_columns": [
+        {
+          "column": "d_month_seq",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_year",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_fy_year",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_day_name",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_holiday",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_following_holiday",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_same_day_ly",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_same_day_lq",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_current_day",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_current_month",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        },
+        {
+          "column": "d_current_year",
+          "min": null,
+          "max": null,
+          "must_be_positive": false
+        }
+      ],
+      "timestamp_columns": [
+        {
+          "column": "d_date_id",
+          "freshness_sla_hours": null,
+          "is_event_time": false,
+          "late_arrival_hours": null,
+          "must_be_after": null
+        },
+        {
+          "column": "d_date",
+          "freshness_sla_hours": null,
+          "is_event_time": false,
+          "late_arrival_hours": null,
+          "must_be_after": null
+        }
+      ],
+      "foreign_keys": [],
+      "business_rules": [],
+      "conditional_completeness": [],
+      "volume": {
+        "max_daily_change_pct": 30,
+        "prior_table": null
+      },
+      "_idx": 3
+    }
+  ]
+};
+
+document.querySelectorAll('.tbl-header').forEach(h => {
+  h.addEventListener('click', () => {
+    h.classList.toggle('open');
+    h.nextElementSibling.classList.toggle('open');
+  });
+});
+function expandAll()   { document.querySelectorAll('.tbl-body,.tbl-header').forEach(e => e.classList.add('open')); }
+function collapseAll() { document.querySelectorAll('.tbl-body,.tbl-header').forEach(e => e.classList.remove('open')); }
+function addRow(id) {
+  const c = document.getElementById(id);
+  const r = document.createElement('div'); r.className='rep-row';
+  r.innerHTML=`<input type="text" placeholder="value"/><button onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(r);
+}
+
+function readForm() {
+  const q = JSON.parse(JSON.stringify(SEED));
+  document.querySelectorAll('[data-table]').forEach(el => {
+    const ti = parseInt(el.dataset.table), field = el.dataset.field;
+    const ci = el.dataset.col !== undefined ? parseInt(el.dataset.col) : null;
+    const sub = el.dataset.sub;
+    const tbl = q.tables[ti]; if (!tbl) return;
+    let val = el.type==='checkbox' ? el.checked : el.value.trim();
+    if (ci !== null && sub && tbl[field] && tbl[field][ci]) {
+      if (sub==='valid_values') {
+        const cont = document.getElementById(`rep_categorical_columns_${ti}_${ci}`);
+        val = cont ? Array.from(cont.querySelectorAll('input')).map(i=>i.value.trim()).filter(Boolean) : [];
+      } else if (['min','max','freshness_sla_hours','late_arrival_hours'].includes(sub)) {
+        val = val==='' ? null : (isNaN(Number(val)) ? val : Number(val));
+      }
+      tbl[field][ci][sub] = val;
+    } else if (field==='volume_change_pct') {
+      tbl.volume.max_daily_change_pct = val==='' ? 30 : Number(val);
+    } else if (field==='prior_table') {
+      tbl.volume.prior_table = val||null;
+    } else if (!['business_rules','foreign_keys','conditional_completeness'].includes(field)) {
+      tbl[field] = val||null;
+    }
+  });
+  document.querySelectorAll('[data-rep-table]').forEach(cont => {
+    const ti = parseInt(cont.dataset.repTable), rf = cont.dataset.repField;
+    const tbl = q.tables[ti]; if (!tbl) return;
+    if (rf==='business_rules')
+      tbl.business_rules = Array.from(cont.querySelectorAll('.rule-input')).map(i=>i.value.trim()).filter(Boolean);
+    else if (rf==='foreign_keys')
+      tbl.foreign_keys = Array.from(cont.querySelectorAll('.fk-row')).map(r=>{
+        const ins=r.querySelectorAll('input');
+        return {column:ins[0]?.value.trim(),references_table:ins[1]?.value.trim(),references_column:ins[2]?.value.trim()};
+      }).filter(r=>r.column);
+    else if (rf==='conditional_completeness')
+      tbl.conditional_completeness = Array.from(cont.querySelectorAll('.cc-row')).map(r=>{
+        const ins=r.querySelectorAll('input');
+        return {condition:ins[0]?.value.trim(),column_must_not_be_null:ins[1]?.value.trim()};
+      }).filter(r=>r.condition);
+  });
+  return q;
+}
+
+function downloadYAML() {
+  const q=readForm(), yml=jsyaml.dump(q,{lineWidth:120,noRefs:true});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([yml],{type:'text/yaml'}));
+  a.download='questionnaire_filled.yaml'; a.click();
+  const m=document.getElementById('statusMsg');
+  m.textContent='✓ Downloaded questionnaire_filled.yaml';
+  setTimeout(()=>m.textContent='',4000);
+}
+</script>
+
+<script>
+function addFKRow(containerId) {
+  const c = document.getElementById(containerId);
+  const row = document.createElement('div');
+  row.className = 'rep-row fk-row';
+  row.innerHTML = `
+    <input type="text" placeholder="column"/>
+    <input type="text" placeholder="references_table"/>
+    <input type="text" placeholder="references_column"/>
+    <button onclick="this.parentElement.remove()" title="Remove">✕</button>`;
+  c.appendChild(row);
+}
+function addRuleRow(containerId) {
+  const c = document.getElementById(containerId);
+  const row = document.createElement('div');
+  row.className = 'rep-row';
+  row.innerHTML = `<input class="rule-input" type="text" placeholder="SQL condition e.g. amount >= 0"/>
+    <button onclick="this.parentElement.remove()" title="Remove">✕</button>`;
+  c.appendChild(row);
+}
+function addCCRow(containerId) {
+  const c = document.getElementById(containerId);
+  const row = document.createElement('div');
+  row.className = 'rep-row cc-row';
+  row.innerHTML = `
+    <input type="text" placeholder="condition  e.g. status = 'shipped'"/>
+    <input type="text" placeholder="column must not be null  e.g. shipped_at"/>
+    <button onclick="this.parentElement.remove()" title="Remove">✕</button>`;
+  c.appendChild(row);
+}
+</script>
+</body>
+</html>

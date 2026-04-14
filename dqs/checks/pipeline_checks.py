@@ -25,7 +25,7 @@ class PipelineFailureIndicator(BaseCheck):
     dimension = "pipeline"
     metric_name = "pipeline_failure_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         runs_table = config.pipeline_runs_table
         dataset_name = config.dataset_name or (
             config.table.split(".")[-1] if config.table else None

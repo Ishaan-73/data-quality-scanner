@@ -16,7 +16,7 @@ class ForeignKeyViolationCheck(BaseCheck):
     dimension = "integrity"
     metric_name = "fk_violation_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         child_table = config.child_table or config.table
         parent_table = config.parent_table or config.reference_table
         child_col = config.child_column or config.column
@@ -46,7 +46,7 @@ class OrphanRecordCheck(BaseCheck):
     dimension = "integrity"
     metric_name = "orphan_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         child_table = config.child_table or config.table
         parent_table = config.parent_table or config.reference_table
         child_col = config.child_column or config.column
@@ -83,7 +83,7 @@ class BrokenJoinCoverageCheck(BaseCheck):
     metric_name = "join_coverage_ratio"
     direction = "higher_is_better"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         left_table = config.source_table or config.table
         right_table = config.reference_table or config.parent_table
         left_col = config.source_column or config.column

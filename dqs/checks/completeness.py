@@ -16,7 +16,7 @@ class NullRatioByColumn(BaseCheck):
     dimension = "completeness"
     metric_name = "null_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         col = config.column or "*"
         table = config.table
         if col == "*":
@@ -43,7 +43,7 @@ class NullRatioInCriticalColumns(BaseCheck):
     dimension = "completeness"
     metric_name = "critical_null_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         cols = config.columns or ([config.column] if config.column else [])
         if not cols:
             raise ValueError("Check 2 requires 'columns' or 'column' in CheckConfig.")
@@ -70,11 +70,12 @@ class EmptyRowCheck(BaseCheck):
     dimension = "completeness"
     metric_name = "empty_row_count"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         cols = config.columns or ([config.column] if config.column else [])
         table = config.table
         if cols:
-            coalesce_expr = ", ".join(cols)
+            # Cast every column to VARCHAR so COALESCE works across mixed types
+            coalesce_expr = ", ".join(f"CAST({c} AS VARCHAR)" for c in cols)
             where = f"COALESCE({coalesce_expr}) IS NULL"
         else:
             # Fallback: count rows where every column is null — not reliable without column list
@@ -93,7 +94,7 @@ class ConditionalCompleteness(BaseCheck):
     dimension = "completeness"
     metric_name = "conditional_missing_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         table = config.table
         condition = config.condition
         dep_col = config.dependent_column or config.column

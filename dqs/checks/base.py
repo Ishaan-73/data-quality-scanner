@@ -33,10 +33,30 @@ class BaseCheck(ABC):
     # Direction: "lower_is_better" (most checks) or "higher_is_better" (e.g. join coverage)
     direction: str = "lower_is_better"
 
-    def run(self, connector: BaseConnector, config: CheckConfig) -> CheckResult:
+    def run(
+        self,
+        connector: BaseConnector,
+        config: CheckConfig,
+        pii_excluded: set | None = None,
+    ) -> CheckResult:
         """Execute the check and return a structured result."""
         threshold = config.threshold if config.threshold is not None else DEFAULT_THRESHOLDS.get(self.check_id)
         weight = effective_weight(self.check_id, self.dimension)
+
+        # Resolve a human-readable table and column for the result, falling back
+        # to the various alias fields used by integrity / join checks.
+        result_table = (
+            config.table
+            or config.child_table
+            or config.source_table
+            or config.today_table
+        )
+        result_column = (
+            config.column
+            or config.child_column
+            or config.source_column
+            or config.pk_column
+        )
 
         base = CheckResult(
             check_id=self.check_id,
@@ -45,20 +65,29 @@ class BaseCheck(ABC):
             metric_name=self.metric_name,
             threshold=threshold,
             effective_weight=weight,
-            table=config.table,
-            column=config.column,
+            table=result_table,
+            column=result_column,
         )
 
         if not config.enabled:
             base.skipped = True
-            base.pass_score = 1.0  # skipped checks don't penalise score
+            base.pass_score = 1.0
             base.weighted_score = weight * 1.0
             return base
+
+        # Skip value-sampling checks on PII-excluded columns
+        if pii_excluded and config.column and config.table:
+            if (config.table, config.column) in pii_excluded:
+                base.skipped = True
+                base.pass_score = 1.0
+                base.weighted_score = weight * 1.0
+                base.error = "pii_excluded"
+                return base
 
         # Advisory checks (threshold = None) are always "pass" with full score
         if threshold is None:
             try:
-                sql = self._build_sql(config)
+                sql = self._build_sql(config, dialect=connector.dialect)
                 df = connector.execute_query(sql)
                 metric = self._extract_metric(df)
                 base.metric_value = metric
@@ -71,7 +100,7 @@ class BaseCheck(ABC):
             return base
 
         try:
-            sql = self._build_sql(config)
+            sql = self._build_sql(config, dialect=connector.dialect)
             base.executed_sql = sql
             df = connector.execute_query(sql)
             metric = self._extract_metric(df)
@@ -97,8 +126,14 @@ class BaseCheck(ABC):
         return base
 
     @abstractmethod
-    def _build_sql(self, config: CheckConfig) -> str:
-        """Return the SQL string that computes the quality metric."""
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
+        """Return the SQL string that computes the quality metric.
+
+        Args:
+            config: Check configuration with table, column, and parameter details.
+            dialect: The connector dialect (e.g. 'snowflake', 'synapse').
+                     Used for dialect-specific SQL generation.
+        """
 
     @abstractmethod
     def _extract_metric(self, df) -> Optional[float]:

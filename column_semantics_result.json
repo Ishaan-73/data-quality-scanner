@@ -1,0 +1,744 @@
+{
+  "domain": "Retail and e-commerce operations including transactions, customers, products, stores, and returns",
+  "model": "gemini-2.5-flash",
+  "tables": {
+    "customer": {
+      "total_rows": 1050,
+      "sampled_rows": 50,
+      "columns": {
+        "c_customer_sk": {
+          "description": "A unique surrogate key identifying each customer in the database.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "c_customer_id": {
+          "description": "A unique alphanumeric identifier for the customer, likely a business key.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "c_current_cdemo_sk": {
+          "description": "A foreign key referencing the demographic information for the customer.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "c_current_hdemo_sk": {
+          "description": "A foreign key referencing the household demographic information for the customer.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "c_current_addr_sk": {
+          "description": "A foreign key referencing the current address of the customer.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "c_first_shipto_date_sk": {
+          "description": "A foreign key referencing the date when the customer's first order was shipped.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "c_first_sales_date_sk": {
+          "description": "A foreign key referencing the date of the customer's very first sale or transaction.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "c_salutation": {
+          "description": "The formal title or salutation used for the customer (e.g., Mr., Ms., Dr.).",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "c_first_name": {
+          "description": "The given name of the customer.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "c_last_name": {
+          "description": "The family name or surname of the customer.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "c_preferred_cust_flag": {
+          "description": "A flag indicating if the customer is designated as a preferred customer, with 'Y' for yes and 'N' for no.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "c_birth_day": {
+          "description": "The day of the month on which the customer was born.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "c_birth_month": {
+          "description": "The month of the year in which the customer was born.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "c_birth_year": {
+          "description": "The four-digit year in which the customer was born.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "c_birth_country": {
+          "description": "The country where the customer was born.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "c_login": {
+          "description": "The username used by the customer for logging into the system, though often left blank in the sample.",
+          "confidence": 55,
+          "type": "VARCHAR"
+        },
+        "c_email_address": {
+          "description": "The email address associated with the customer's account.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "c_last_review_date_sk": {
+          "description": "A foreign key referencing the date of the customer's most recent product or service review.",
+          "confidence": 90,
+          "type": "INTEGER"
+        }
+      },
+      "tokens_in": 5227,
+      "tokens_out": 763
+    },
+    "item": {
+      "total_rows": 180,
+      "sampled_rows": 20,
+      "columns": {
+        "i_item_sk": {
+          "description": "This is a unique system-generated identifier for each distinct item.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "i_item_id": {
+          "description": "This is a unique alphanumeric business identifier for the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_rec_start_date": {
+          "description": "This column indicates the date when the item record became effective.",
+          "confidence": 95,
+          "type": "DATE"
+        },
+        "i_rec_end_date": {
+          "description": "This column indicates the date when the item record ceased to be effective, or is null if it is currently active.",
+          "confidence": 90,
+          "type": "DATE"
+        },
+        "i_item_desc": {
+          "description": "This column contains a detailed textual description of the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_current_price": {
+          "description": "This column represents the current retail price of the item.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "i_wholesale_cost": {
+          "description": "This column represents the cost of the item when purchased at wholesale.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "i_brand_id": {
+          "description": "This is a unique identifier for the brand of the item.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "i_brand": {
+          "description": "This column specifies the name of the brand associated with the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_class_id": {
+          "description": "This is a unique identifier for the product class to which the item belongs.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "i_class": {
+          "description": "This column specifies the name of the product class, such as 'mens' or 'rings', that categorizes the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_category_id": {
+          "description": "This is a unique identifier for the product category to which the item belongs.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "i_category": {
+          "description": "This column specifies the name of the broad product category, such as 'Shoes' or 'Jewelry', that the item falls under.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_manufact_id": {
+          "description": "This is a unique identifier for the manufacturer of the item.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "i_manufact": {
+          "description": "This column specifies the name of the company that manufactured the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_size": {
+          "description": "This column indicates the size specification of the item, such as 'small', 'large', or 'N/A'.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "i_formulation": {
+          "description": "This column appears to be a unique internal code or descriptor related to the item's specific composition or variant.",
+          "confidence": 75,
+          "type": "VARCHAR"
+        },
+        "i_color": {
+          "description": "This column specifies the color of the item.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_units": {
+          "description": "This column describes the unit of measure or packaging quantity in which the item is sold, such as 'Lb' or 'Carton'.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "i_container": {
+          "description": "This column specifies the type of packaging container for the item, though it often indicates 'Unknown'.",
+          "confidence": 75,
+          "type": "VARCHAR"
+        },
+        "i_manager_id": {
+          "description": "This is an identifier for a manager associated with the item or its product line.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "i_product_name": {
+          "description": "This column provides the specific marketing name for the product.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        }
+      },
+      "tokens_in": 3178,
+      "tokens_out": 946
+    },
+    "store_sales": {
+      "total_rows": 28810,
+      "sampled_rows": 20,
+      "columns": {
+        "ss_sold_date_sk": {
+          "description": "A surrogate key referencing the date dimension table for when the store sale occurred.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_sold_time_sk": {
+          "description": "A surrogate key referencing the time dimension table for the specific time of day the store sale occurred.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "ss_item_sk": {
+          "description": "A surrogate key referencing the product or item that was sold in the transaction.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_customer_sk": {
+          "description": "A surrogate key referencing the customer who made the purchase.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_cdemo_sk": {
+          "description": "A surrogate key referencing the customer demographic information associated with the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "ss_hdemo_sk": {
+          "description": "A surrogate key referencing the household demographic information associated with the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "ss_addr_sk": {
+          "description": "A surrogate key referencing the address information, likely the customer's billing or shipping address, relevant to the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "ss_store_sk": {
+          "description": "A surrogate key referencing the physical store location where the transaction took place.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_promo_sk": {
+          "description": "A surrogate key referencing the promotion or special offer applied to the sale.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_ticket_number": {
+          "description": "The unique identifier for the sales transaction or receipt.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_quantity": {
+          "description": "The number of units of a specific item sold in this line item of the transaction.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "ss_wholesale_cost": {
+          "description": "The cost of a single unit of the item from the wholesaler to the store.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_list_price": {
+          "description": "The original manufacturer's suggested retail price for a single unit of the item.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_sales_price": {
+          "description": "The actual unit price at which the item was sold to the customer after any per-unit discounts.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_ext_discount_amt": {
+          "description": "The total monetary amount of discounts applied to the line item, prior to any coupon application.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_ext_sales_price": {
+          "description": "The total sales price for the line item, calculated as quantity multiplied by the unit sales price.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_ext_wholesale_cost": {
+          "description": "The total wholesale cost for all units in the line item, calculated as quantity multiplied by the unit wholesale cost.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_ext_list_price": {
+          "description": "The total list price for all units in the line item, calculated as quantity multiplied by the unit list price.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_ext_tax": {
+          "description": "The total tax amount applied to the line item.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_coupon_amt": {
+          "description": "The total monetary value of coupons applied to this line item.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_net_paid": {
+          "description": "The total amount paid by the customer for the line item, excluding tax, after all discounts and coupons.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_net_paid_inc_tax": {
+          "description": "The total amount paid by the customer for the line item, including tax, after all discounts and coupons.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "ss_net_profit": {
+          "description": "The net profit generated from the sale of the line item, calculated as net paid amount minus the extended wholesale cost.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        }
+      },
+      "tokens_in": 3536,
+      "tokens_out": 1029
+    },
+    "catalog_sales": {
+      "total_rows": 14313,
+      "sampled_rows": 20,
+      "columns": {
+        "cs_sold_date_sk": {
+          "description": "A surrogate key referencing the date dimension for when the catalog sale was finalized.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_sold_time_sk": {
+          "description": "A surrogate key referencing the time dimension for when the catalog sale was finalized.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_ship_date_sk": {
+          "description": "A surrogate key referencing the date dimension for when the ordered items were shipped.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_bill_customer_sk": {
+          "description": "A surrogate key referencing the customer dimension for the customer associated with the billing details of the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_bill_cdemo_sk": {
+          "description": "A surrogate key referencing the customer demographic dimension for the billing customer.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_bill_hdemo_sk": {
+          "description": "A surrogate key referencing the household demographic dimension for the billing customer's household.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_bill_addr_sk": {
+          "description": "A surrogate key referencing the address dimension for the billing address of the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_ship_customer_sk": {
+          "description": "A surrogate key referencing the customer dimension for the customer receiving the shipment.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_ship_cdemo_sk": {
+          "description": "A surrogate key referencing the customer demographic dimension for the shipping customer.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_ship_hdemo_sk": {
+          "description": "A surrogate key referencing the household demographic dimension for the shipping customer's household.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_ship_addr_sk": {
+          "description": "A surrogate key referencing the address dimension for the shipping address of the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_call_center_sk": {
+          "description": "A surrogate key referencing the call center dimension, indicating the call center involved in processing the order.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_catalog_page_sk": {
+          "description": "A surrogate key referencing the catalog page dimension, indicating the specific catalog page from which the item was ordered.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_ship_mode_sk": {
+          "description": "A surrogate key referencing the shipping mode dimension, indicating the method of shipment for the order.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_warehouse_sk": {
+          "description": "A surrogate key referencing the warehouse dimension, indicating the warehouse from which the items were shipped.",
+          "confidence": 85,
+          "type": "INTEGER"
+        },
+        "cs_item_sk": {
+          "description": "A surrogate key referencing the item dimension, representing the specific product sold in the catalog sale.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_promo_sk": {
+          "description": "A surrogate key referencing the promotion dimension, indicating any promotion applied to the sale.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "cs_order_number": {
+          "description": "A unique identifier for the specific catalog sales order.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_quantity": {
+          "description": "The number of units of the item sold in this specific catalog sales transaction.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "cs_wholesale_cost": {
+          "description": "The cost of a single item to the retailer at a wholesale price.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_list_price": {
+          "description": "The official advertised or suggested retail price of a single item before any discounts.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_sales_price": {
+          "description": "The actual price at which a single item was sold to the customer after any per-unit discounts.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_discount_amt": {
+          "description": "The total discount amount applied to the entire quantity of items in this sales line item.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_sales_price": {
+          "description": "The total sales price for the entire quantity of a single item in the transaction, typically calculated as quantity multiplied by sales price.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_wholesale_cost": {
+          "description": "The total wholesale cost for the entire quantity of a single item in the transaction.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_list_price": {
+          "description": "The total list price for the entire quantity of a single item, typically calculated as quantity multiplied by list price.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_tax": {
+          "description": "The total tax amount applied to the sales price of the entire quantity of items in this transaction.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_coupon_amt": {
+          "description": "The total monetary value of any coupon applied to this specific catalog sale.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_ext_ship_cost": {
+          "description": "The total shipping cost incurred for the entire catalog sales order.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_net_paid": {
+          "description": "The total amount paid by the customer for the items, net of discounts and coupons, but before tax and shipping.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_net_paid_inc_tax": {
+          "description": "The total amount paid by the customer for the items, including tax, but before shipping costs.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_net_paid_inc_ship": {
+          "description": "The total amount paid by the customer for the items, including shipping costs, but before tax.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_net_paid_inc_ship_tax": {
+          "description": "The final total amount paid by the customer for the catalog sale, including all items, applicable taxes, and shipping costs.",
+          "confidence": 95,
+          "type": "DECIMAL(7,2)"
+        },
+        "cs_net_profit": {
+          "description": "The net profit generated from the sale of the items, calculated as the net amount paid by the customer for goods minus their total wholesale cost.",
+          "confidence": 90,
+          "type": "DECIMAL(7,2)"
+        }
+      },
+      "tokens_in": 5347,
+      "tokens_out": 1568
+    },
+    "date_dim": {
+      "total_rows": 73049,
+      "sampled_rows": 20,
+      "columns": {
+        "d_date_sk": {
+          "description": "A unique integer identifier serving as the primary key for each date record.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_date_id": {
+          "description": "A unique alphanumeric string identifier for the date record.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "d_date": {
+          "description": "The actual calendar date represented by this record.",
+          "confidence": 100,
+          "type": "DATE"
+        },
+        "d_month_seq": {
+          "description": "A sequential number representing the order of the month within a continuous time series.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_week_seq": {
+          "description": "A sequential number representing the order of the week within a continuous time series.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_quarter_seq": {
+          "description": "A sequential number representing the order of the quarter within a continuous time series.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_year": {
+          "description": "The four-digit calendar year of the date.",
+          "confidence": 100,
+          "type": "INTEGER"
+        },
+        "d_dow": {
+          "description": "The day of the week, represented as an integer (e.g., 0 for Sunday, 1 for Monday).",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_moy": {
+          "description": "The month of the year, represented as an integer from 1 (January) to 12 (December).",
+          "confidence": 100,
+          "type": "INTEGER"
+        },
+        "d_dom": {
+          "description": "The day of the month, represented as an integer from 1 to 31.",
+          "confidence": 100,
+          "type": "INTEGER"
+        },
+        "d_qoy": {
+          "description": "The quarter of the year, represented as an integer from 1 to 4.",
+          "confidence": 100,
+          "type": "INTEGER"
+        },
+        "d_fy_year": {
+          "description": "The fiscal year associated with the date, which may or may not align with the calendar year.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "d_fy_quarter_seq": {
+          "description": "A sequential number representing the order of the fiscal quarter within a continuous time series.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "d_fy_week_seq": {
+          "description": "A sequential number representing the order of the fiscal week within a continuous time series.",
+          "confidence": 90,
+          "type": "INTEGER"
+        },
+        "d_day_name": {
+          "description": "The full name of the day of the week (e.g., 'Sunday', 'Monday').",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "d_quarter_name": {
+          "description": "The name of the calendar quarter, typically including the year (e.g., 'YYYYQ2').",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "d_holiday": {
+          "description": "A flag indicating whether the date is a holiday ('Y' for yes, 'N' for no).",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "d_weekend": {
+          "description": "A flag indicating whether the date is considered a weekend day ('Y' for yes, 'N' for no) based on a defined calendar.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "d_following_holiday": {
+          "description": "A flag indicating whether the date immediately follows a holiday ('Y' for yes, 'N' for no).",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "d_first_dom": {
+          "description": "The surrogate key (`d_date_sk`) of the first day of the month for the given date.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_last_dom": {
+          "description": "The surrogate key (`d_date_sk`) of the last day of the month for the given date.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_same_day_ly": {
+          "description": "The surrogate key (`d_date_sk`) for the same calendar day in the previous year.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_same_day_lq": {
+          "description": "The surrogate key (`d_date_sk`) for the same calendar day in the previous quarter.",
+          "confidence": 95,
+          "type": "INTEGER"
+        },
+        "d_current_day": {
+          "description": "A flag indicating if the date represents the current calendar day ('Y' for yes, 'N' for no).",
+          "confidence": 80,
+          "type": "VARCHAR"
+        },
+        "d_current_week": {
+          "description": "A flag indicating if the date falls within the current calendar week ('Y' for yes, 'N' for no).",
+          "confidence": 80,
+          "type": "VARCHAR"
+        },
+        "d_current_month": {
+          "description": "A flag indicating if the date falls within the current calendar month ('Y' for yes, 'N' for no).",
+          "confidence": 80,
+          "type": "VARCHAR"
+        },
+        "d_current_quarter": {
+          "description": "A flag indicating if the date falls within the current calendar quarter ('Y' for yes, 'N' for no).",
+          "confidence": 80,
+          "type": "VARCHAR"
+        },
+        "d_current_year": {
+          "description": "A flag indicating if the date falls within the current calendar year ('Y' for yes, 'N' for no).",
+          "confidence": 80,
+          "type": "VARCHAR"
+        }
+      },
+      "tokens_in": 3522,
+      "tokens_out": 1316
+    },
+    "customer_address": {
+      "total_rows": 500,
+      "sampled_rows": 50,
+      "columns": {
+        "ca_address_sk": {
+          "description": "A unique identifier for each customer address record.",
+          "confidence": 100,
+          "type": "INTEGER"
+        },
+        "ca_address_id": {
+          "description": "A unique alphanumeric identifier for the customer's address.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "ca_street_number": {
+          "description": "The numerical component of the street address.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "ca_street_name": {
+          "description": "The proper name of the street without its type.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "ca_street_type": {
+          "description": "The classification or type of thoroughfare, such as Street, Road, or Boulevard.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "ca_suite_number": {
+          "description": "The specific suite, apartment, or unit number within a building, if applicable.",
+          "confidence": 90,
+          "type": "VARCHAR"
+        },
+        "ca_city": {
+          "description": "The city where the address is located.",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "ca_county": {
+          "description": "The county or equivalent administrative division where the address is located.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "ca_state": {
+          "description": "The two-letter abbreviation for the U.S. state where the address is located.",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "ca_zip": {
+          "description": "The five-digit U.S. postal zip code for the address.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        },
+        "ca_country": {
+          "description": "The country where the address is located.",
+          "confidence": 100,
+          "type": "VARCHAR"
+        },
+        "ca_gmt_offset": {
+          "description": "The offset in hours from Coordinated Universal Time (UTC) for the address's location.",
+          "confidence": 95,
+          "type": "DECIMAL(5,2)"
+        },
+        "ca_location_type": {
+          "description": "The classification of the residential property, such as an apartment, condo, or single family home.",
+          "confidence": 95,
+          "type": "VARCHAR"
+        }
+      },
+      "tokens_in": 3026,
+      "tokens_out": 524
+    }
+  }
+}

@@ -16,7 +16,7 @@ class SourceToTargetReconciliation(BaseCheck):
     dimension = "accuracy"
     metric_name = "reconciliation_variance_pct"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         src_table = config.source_table
         tgt_table = config.target_table or config.table
         src_col = config.source_column or config.column
@@ -45,7 +45,7 @@ class BusinessRuleValidation(BaseCheck):
     dimension = "accuracy"
     metric_name = "business_rule_error_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         table = config.table
         price_col = config.price_column
         qty_col = config.quantity_column
@@ -82,7 +82,7 @@ class ReferenceDataValidation(BaseCheck):
     dimension = "accuracy"
     metric_name = "reference_mismatch_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         fact_table = config.table
         ref_table = config.reference_table
         fact_col = config.column or config.source_column

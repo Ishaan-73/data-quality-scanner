@@ -16,7 +16,7 @@ class RowCountVolumeChange(BaseCheck):
     dimension = "volume"
     metric_name = "volume_change_pct"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         today_table = config.today_table or config.table
         prior_table = config.prior_table
         if not prior_table:
@@ -55,7 +55,7 @@ class MissingPartitionCheck(BaseCheck):
     dimension = "volume"
     metric_name = "missing_partition_count"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         expected_table = config.expected_partitions_table
         actual_table = config.actual_partitions_table or config.table
         pk = config.partition_key or config.pk_column or "partition_key"

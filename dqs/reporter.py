@@ -50,7 +50,11 @@ def _print_console(report: ScanReport) -> None:
         print(_plain_text(report))
         return
 
-    console = Console()
+    console = Console(force_terminal=True)
+
+    # PII manifest banner (printed first, before DQS results)
+    if report.pii_manifests:
+        _print_pii_banner(console, report.pii_manifests)
 
     # Header panel
     mode_label = "[bold cyan]SYNTHETIC CLONE[/]" if report.is_synthetic else "[bold green]LIVE SCAN[/]"
@@ -121,6 +125,53 @@ def _print_console(report: ScanReport) -> None:
             "[dim italic]Note: Results based on synthetic clone — "
             "no production data was accessed during checks.[/]"
         )
+
+
+def _print_pii_banner(console, manifests) -> None:
+    from rich.table import Table
+    from rich import box
+
+    total_high   = sum(m.high_count   for m in manifests)
+    total_medium = sum(m.medium_count for m in manifests)
+    total_review = sum(m.review_count for m in manifests)
+
+    # Collect worst gate
+    _PRIORITY = {"BLOCK": 3, "SYNTHETIC_MODE": 2, "PROCEED_EXCLUDE": 1, "CLEAR": 0}
+    worst = max(manifests, key=lambda m: _PRIORITY.get(m.gate_decision, 0))
+
+    gate_color = {
+        "BLOCK": "bold red", "SYNTHETIC_MODE": "bold yellow",
+        "PROCEED_EXCLUDE": "yellow", "CLEAR": "green",
+    }.get(worst.gate_decision, "white")
+
+    console.print(
+        f"[{gate_color}]■ PII SCREENER — {worst.gate_decision}[/]  "
+        f"HIGH: [red]{total_high}[/]  MEDIUM: [yellow]{total_medium}[/]  "
+        f"REVIEW: [dim]{total_review}[/]  "
+        f"Tables screened: {len(manifests)}"
+    )
+
+    flagged = [
+        col for m in manifests for col in m.columns
+        if col.status in ("HIGH", "MEDIUM")
+    ]
+    if flagged:
+        tbl = Table(
+            "Table", "Column", "Status", "Type", "Via", "Samples",
+            box=box.SIMPLE, header_style="bold yellow", show_header=True,
+        )
+        for col in flagged:
+            status_color = "red" if col.status == "HIGH" else "yellow"
+            tbl.add_row(
+                col.table, col.column,
+                f"[{status_color}]{col.status}[/]",
+                col.pii_type or "—",
+                col.detected_via,
+                "  ".join(col.masked_samples[:2]) or "—",
+            )
+        console.print(tbl)
+
+    console.rule()
 
 
 def _score_color(score: float) -> str:

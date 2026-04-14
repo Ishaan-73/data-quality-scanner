@@ -16,7 +16,7 @@ class CrossFieldConsistency(BaseCheck):
     dimension = "consistency"
     metric_name = "cross_field_error_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         table = config.table
         condition = config.condition  # e.g. "end_date < start_date"
         if not condition:
@@ -42,7 +42,7 @@ class CrossTableConsistency(BaseCheck):
     dimension = "consistency"
     metric_name = "cross_table_mismatch_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         src = config.source_table or config.table
         ref = config.reference_table
         src_col = config.source_column or config.column
@@ -71,7 +71,7 @@ class UnitCurrencyConsistency(BaseCheck):
     dimension = "consistency"
     metric_name = "unit_mismatch_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         col = config.column
         table = config.table
         allowed = config.allowed_values
@@ -100,7 +100,7 @@ class StandardizationCheck(BaseCheck):
     dimension = "consistency"
     metric_name = "standardization_issue_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         col = config.column
         table = config.table
         canonical = config.allowed_values  # list of canonical/standard values

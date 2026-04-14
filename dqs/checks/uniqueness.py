@@ -16,7 +16,7 @@ class PrimaryKeyDuplicateRatio(BaseCheck):
     dimension = "uniqueness"
     metric_name = "pk_duplicate_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         pk = config.pk_column or config.column
         if not pk:
             raise ValueError("Check 5 requires 'pk_column' in CheckConfig.")
@@ -39,7 +39,7 @@ class BusinessKeyDuplicateRatio(BaseCheck):
     dimension = "uniqueness"
     metric_name = "business_duplicate_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         biz_keys = config.business_key_columns or (
             [config.column] if config.column else []
         )
@@ -74,7 +74,7 @@ class NearDuplicateCandidateCheck(BaseCheck):
     dimension = "uniqueness"
     metric_name = "near_duplicate_count"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         cols = config.columns or ([config.column] if config.column else [])
         if not cols:
             raise ValueError("Check 7 requires 'columns' in CheckConfig.")

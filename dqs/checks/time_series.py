@@ -21,7 +21,7 @@ class TimestampSequenceIntegrity(BaseCheck):
     dimension = "time_series"
     metric_name = "time_integrity_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         ts_col = config.timestamp_column
         table = config.table
         entity_col = config.entity_column

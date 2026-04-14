@@ -29,10 +29,10 @@ Given a YAML config pointing at a table (or set of tables), DQS will:
 
 ## Supported Connectors
 
-Snowflake · BigQuery · Redshift · Databricks · PostgreSQL · DuckDB
+Snowflake · BigQuery · Redshift · Databricks · PostgreSQL · Azure Synapse · DuckDB
 
 ```bash
-pip install -e ".[snowflake]"   # or: bigquery, redshift, databricks, postgres, all
+pip install -e ".[snowflake]"   # or: bigquery, redshift, databricks, postgres, synapse, all
 ```
 
 ---

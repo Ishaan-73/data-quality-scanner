@@ -19,7 +19,10 @@ from dqs.scorer import compute_report
 from dqs.config.models import ScanReport
 
 
-def run_live_scan(config: ScanConfig) -> ScanReport:
+def run_live_scan(
+    config: ScanConfig,
+    pii_excluded: set | None = None,
+) -> ScanReport:
     """
     Execute a live scan against the configured data warehouse.
 
@@ -40,10 +43,9 @@ def run_live_scan(config: ScanConfig) -> ScanReport:
             check = CHECK_REGISTRY.get(check_cfg.check_id)
             if check is None:
                 continue
-            # Skip checks for dimensions not in the requested dimension filter
             if config.dimensions and check.dimension not in config.dimensions:
                 continue
-            result = check.run(connector, check_cfg)
+            result = check.run(connector, check_cfg, pii_excluded=pii_excluded)
             results.append(result)
 
     finally:

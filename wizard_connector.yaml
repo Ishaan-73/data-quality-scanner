@@ -1,0 +1,6 @@
+scan_name: tpcds_wizard_run
+mode: live
+connector:
+  dialect: duckdb
+  duckdb_path: test/tpcds_dirty.duckdb
+checks: []

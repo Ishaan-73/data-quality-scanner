@@ -38,7 +38,7 @@ from dqs.connectors.duckdb_connector import DuckDBConnector
 from dqs.scorer import compute_report
 
 
-def run_synthetic_clone(config: ScanConfig) -> ScanReport:
+def run_synthetic_clone(config: ScanConfig, pii_excluded: set | None = None) -> ScanReport:
     """
     Execute a synthetic clone scan.
 
@@ -87,7 +87,7 @@ def run_synthetic_clone(config: ScanConfig) -> ScanReport:
                 continue
             if config.dimensions and check.dimension not in config.dimensions:
                 continue
-            result = check.run(duck, check_cfg)
+            result = check.run(duck, check_cfg, pii_excluded=pii_excluded)
             results.append(result)
     finally:
         duck.close()

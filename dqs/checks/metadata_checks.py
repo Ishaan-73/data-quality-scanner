@@ -27,7 +27,7 @@ class MetadataCompleteness(BaseCheck):
     dimension = "metadata"
     metric_name = "metadata_gap_ratio"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         catalog_table = config.metadata_catalog_table
         if not catalog_table:
             raise ValueError(

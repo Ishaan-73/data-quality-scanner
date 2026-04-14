@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, model_validator
 class ConnectorConfig(BaseModel):
     """Connection settings for a data warehouse."""
 
-    dialect: Literal["snowflake", "bigquery", "redshift", "databricks", "postgres", "duckdb"]
+    dialect: Literal["snowflake", "bigquery", "redshift", "databricks", "postgres", "duckdb", "synapse"]
     # Common fields (used across dialects)
     host: Optional[str] = None
     port: Optional[int] = None
@@ -36,6 +36,11 @@ class ConnectorConfig(BaseModel):
 
     # DuckDB (synthetic clone / testing)
     duckdb_path: Optional[str] = ":memory:"
+
+    # Synapse-specific
+    workspace: Optional[str] = None
+    pool_type: Optional[Literal["dedicated", "serverless"]] = None
+    auth: Optional[Dict[str, str]] = None  # method, tenant_id, client_id, client_secret
 
     model_config = {"populate_by_name": True}
 
@@ -93,6 +98,49 @@ class CheckConfig(BaseModel):
     extra: Optional[Dict[str, Any]] = None
 
 
+class ScreenerConfig(BaseModel):
+    """PII screener settings — add a 'screener:' block to scan YAML."""
+
+    enabled: bool = True
+    enable_pass3: bool = False
+    sample_size: int = 100
+    on_pii_detected: Literal["block", "exclude", "synthetic"] = "exclude"
+    categories: Optional[List[str]] = None  # None = all categories
+
+
+class PIIColumnResult(BaseModel):
+    """PII assessment for one column."""
+
+    column: str
+    table: str
+    status: Literal["HIGH", "MEDIUM", "REVIEW", "CLEAR"]
+    category: Optional[str] = None        # identity|contact|financial|health|behavioral|indirect
+    pii_type: Optional[str] = None        # e.g. "Contact — email"
+    confidence: float = 0.0
+    detected_via: str = "none"            # name_match | name_match+regex | semantic | none
+    sample_count: int = 0
+    match_count: int = 0
+    masked_samples: List[str] = Field(default_factory=list)
+    notes: Optional[str] = None
+
+
+class PIIManifest(BaseModel):
+    """PII screening results for one table."""
+
+    scan_id: str
+    table: str
+    row_count: int
+    screened_at: datetime
+    passes_run: List[int]
+    gate_decision: Literal["BLOCK", "PROCEED_EXCLUDE", "SYNTHETIC_MODE", "CLEAR"]
+    gate_reason: str
+    columns: List[PIIColumnResult] = Field(default_factory=list)
+    high_count: int = 0
+    medium_count: int = 0
+    review_count: int = 0
+    clear_count: int = 0
+
+
 class ScanConfig(BaseModel):
     """Top-level scan configuration loaded from YAML."""
 
@@ -107,6 +155,8 @@ class ScanConfig(BaseModel):
     dimensions: List[str] = Field(default_factory=list)
     # MVP-only shortcut
     mvp_only: bool = False
+    # PII screener (runs before any DQS check)
+    screener: Optional[ScreenerConfig] = None
 
 
 class CheckResult(BaseModel):
@@ -158,6 +208,7 @@ class ScanReport(BaseModel):
     scan_end: Optional[datetime] = None
     duration_seconds: Optional[float] = None
     is_synthetic: bool = False
+    pii_manifests: List["PIIManifest"] = Field(default_factory=list)
 
 
 class SchemaColumnProfile(BaseModel):

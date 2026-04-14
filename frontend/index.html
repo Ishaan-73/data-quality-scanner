@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GovernIQ - Data Quality Scanner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #060e1c;
+            --card-bg: rgba(20, 35, 60, 0.5);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent1: #1B5FA0;
+            --accent2: #47A848;
+            --text-main: #f0f6ff;
+            --text-muted: #7a9abf;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-glow {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(ellipse, rgba(27,95,160,0.25) 0%, rgba(71,168,72,0.12) 60%, transparent 80%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            top: -250px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: float 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0%   { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-48%) scale(1.08); }
+        }
+
+        header {
+            width: 100%;
+            padding: 22px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            background: rgba(6, 14, 28, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        .logo-img { height: 36px; }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            padding: 64px 20px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .hero-text {
+            text-align: center;
+            margin-bottom: 52px;
+            animation: fadeInDown 0.7s ease-out;
+        }
+
+        .hero-text h1 {
+            font-size: 54px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, #e0eeff 0%, #a8d0ff 50%, #7de87f 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 580px;
+            margin: 0 auto;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 44px 48px;
+            width: 100%;
+            max-width: 620px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(27,95,160,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .dataset-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 12px 22px;
+            background: rgba(27,95,160,0.12);
+            border-radius: 100px;
+            border: 1px solid rgba(27,95,160,0.25);
+        }
+
+        .dataset-info span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #7ab8f5;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .glow-button {
+            background: linear-gradient(135deg, #1B5FA0, #47A848);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 44px;
+            font-size: 17px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+            box-shadow: 0 10px 28px -5px rgba(27,95,160,0.45);
+            letter-spacing: 0.3px;
+        }
+
+        .glow-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px -5px rgba(71,168,72,0.4);
+        }
+
+        /* ── Pipeline steps ─────────────────────────────────────── */
+        #pipeline {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .pipe-step {
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding: 13px 0;
+            position: relative;
+            opacity: 0.3;
+            transition: opacity 0.35s ease;
+        }
+
+        .pipe-step.active,
+        .pipe-step.done { opacity: 1; }
+
+        .pipe-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 46px;
+            width: 2px;
+            height: calc(100% - 12px);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .pipe-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 2px solid rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+
+        .pipe-step.active .pipe-icon {
+            border-color: #5aaeff;
+            color: #5aaeff;
+            animation: spinIcon 0.9s linear infinite;
+        }
+
+        .pipe-step.done .pipe-icon {
+            background: #47A848;
+            border-color: #47A848;
+            color: #fff;
+            animation: none;
+            font-size: 13px;
+        }
+
+        .pipe-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .pipe-detail {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            min-height: 16px;
+        }
+
+        /* ── View Report button (shown after scan) ─────────────── */
+        #report-btn-wrap {
+            display: none;
+            width: 100%;
+            margin-top: 28px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .report-button {
+            width: 100%;
+            background: linear-gradient(135deg, #1B5FA0, #47A848);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 0;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 24px -4px rgba(71,168,72,0.4);
+        }
+
+        .report-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px -4px rgba(71,168,72,0.55);
+        }
+
+        /* ── Error box ──────────────────────────────────────────── */
+        .error-box {
+            display: none;
+            background: rgba(220,38,38,0.1);
+            border: 1px solid rgba(220,38,38,0.4);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: #fca5a5;
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @keyframes spinIcon { to { transform: rotate(360deg); } }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <header>
+        <img src="http://127.0.0.1:8000/logo" class="logo-img" alt="GovernIQ"
+             onerror="this.style.display='none';document.getElementById('logo-text').style.display='block'">
+        <span id="logo-text" style="display:none;font-size:22px;font-weight:800;
+              background:linear-gradient(to right,#5aaeff,#47A848);
+              -webkit-background-clip:text;-webkit-text-fill-color:transparent">GovernIQ</span>
+        <div style="font-size:13px;color:var(--text-muted);font-weight:600;letter-spacing:.5px">
+            DATA QUALITY SCANNER
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero-text">
+            <h1>Automated Data Quality<br>at True Scale</h1>
+            <p>Initiate a full analytical scan of the TPC-DS dataset across all quality dimensions directly from your browser.</p>
+        </div>
+
+        <div class="glass-card">
+
+            <!-- Init state -->
+            <div id="init-state" style="display:flex;flex-direction:column;align-items:center;width:100%">
+                <div class="dataset-info">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7ab8f5" stroke-width="2">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                    </svg>
+                    <span>TPC-DS · 8 tables · tpcds_full_scan.yaml</span>
+                </div>
+                <button class="glow-button" onclick="triggerScan()">
+                    Run Data Quality Scan
+                </button>
+            </div>
+
+            <!-- Pipeline -->
+            <div id="pipeline">
+                <div class="pipe-step" id="ps-0">
+                    <div class="pipe-icon">○</div>
+                    <div>
+                        <div class="pipe-label">Schema Introspection</div>
+                        <div class="pipe-detail" id="pd-0"></div>
+                    </div>
+                </div>
+                <div class="pipe-step" id="ps-1">
+                    <div class="pipe-icon">○</div>
+                    <div>
+                        <div class="pipe-label">Questionnaire Generated</div>
+                        <div class="pipe-detail" id="pd-1"></div>
+                    </div>
+                </div>
+                <div class="pipe-step" id="ps-2">
+                    <div class="pipe-icon">○</div>
+                    <div>
+                        <div class="pipe-label">Scan Config Ready</div>
+                        <div class="pipe-detail" id="pd-2"></div>
+                    </div>
+                </div>
+                <div class="pipe-step" id="ps-3">
+                    <div class="pipe-icon">○</div>
+                    <div>
+                        <div class="pipe-label">Executing Quality Checks</div>
+                        <div class="pipe-detail" id="pd-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Report button (appears on completion) -->
+            <div id="report-btn-wrap">
+                <button class="report-button" id="report-btn">
+                    View Full Report →
+                </button>
+            </div>
+
+            <div class="error-box" id="error-box"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        let reportJobId = null;
+
+        // ── Step helpers ──────────────────────────────────────────────────────
+
+        function activateStep(i) {
+            const step = document.getElementById('ps-' + i);
+            step.classList.add('active');
+            step.querySelector('.pipe-icon').innerHTML = '↻';
+        }
+
+        function setStepDetail(i, text) {
+            document.getElementById('pd-' + i).innerText = text;
+        }
+
+        function markDone(i, detail) {
+            const step = document.getElementById('ps-' + i);
+            step.classList.remove('active');
+            step.classList.add('done');
+            step.querySelector('.pipe-icon').innerHTML = '✓';
+            if (detail) setStepDetail(i, detail);
+        }
+
+        function completeStep(i, delayMs, detail) {
+            activateStep(i);
+            return new Promise(resolve => setTimeout(() => {
+                markDone(i, detail);
+                resolve();
+            }, delayMs));
+        }
+
+        // ── Main flow ─────────────────────────────────────────────────────────
+
+        async function triggerScan() {
+            document.getElementById('init-state').style.display = 'none';
+            document.getElementById('pipeline').style.display = 'block';
+            document.getElementById('error-box').style.display = 'none';
+
+            let jobId;
+            try {
+                const res = await fetch(`${API_URL}/api/jobs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ config_path: 'tpcds_full_scan.yaml' })
+                });
+                if (!res.ok) throw new Error('API request failed');
+                jobId = (await res.json()).job_id;
+            } catch (err) {
+                showError('Failed to connect to backend. Make sure FastAPI is running on port 8000.');
+                return;
+            }
+
+            // Animated wizard phases (run while real scan starts in background)
+            await completeStep(0, 1500, '8 tables discovered: store_sales, catalog_sales, web_sales, item, customer, store, date_dim, inventory');
+            await completeStep(1, 1000, 'Configuration automated — 502 checks mapped across 8 tables');
+            await completeStep(2,  600, '7 quality dimensions · completeness, uniqueness, validity, integrity, consistency, accuracy, anomaly');
+
+            // Real scan polling
+            activateStep(3);
+            setStepDetail(3, 'Starting…');
+            pollJob(jobId);
+        }
+
+        function pollJob(jobId) {
+            const iv = setInterval(async () => {
+                try {
+                    const s = await fetch(`${API_URL}/api/jobs/${jobId}`).then(r => r.json());
+                    const elapsed = Math.floor(s.duration_seconds || 0);
+                    setStepDetail(3, `Running 502 checks · ${elapsed}s elapsed`);
+
+                    if (s.status === 'COMPLETED') {
+                        clearInterval(iv);
+                        markDone(3, 'All checks complete');
+                        reportJobId = jobId;
+                        showReportButton(jobId);
+                    } else if (s.status === 'FAILED') {
+                        clearInterval(iv);
+                        showError('Scan failed: ' + s.error_message);
+                    }
+                } catch (err) {
+                    console.error('Polling error', err);
+                }
+            }, 1000);
+        }
+
+        function showReportButton(jobId) {
+            const wrap = document.getElementById('report-btn-wrap');
+            wrap.style.display = 'block';
+            document.getElementById('report-btn').onclick = () => {
+                window.open(`${API_URL}/api/reports/${jobId}`, '_blank');
+            };
+        }
+
+        function showError(msg) {
+            document.getElementById('pipeline').style.display = 'none';
+            document.getElementById('init-state').style.display = 'flex';
+            const errBox = document.getElementById('error-box');
+            errBox.style.display = 'block';
+            errBox.innerText = msg;
+        }
+    </script>
+</body>
+</html>

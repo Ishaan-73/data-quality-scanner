@@ -28,7 +28,7 @@ class SchemaDriftDetection(BaseCheck):
     dimension = "schema"
     metric_name = "schema_drift_events"
 
-    def _build_sql(self, config: CheckConfig) -> str:
+    def _build_sql(self, config: CheckConfig, dialect: str = "") -> str:
         table = config.table
         baseline_table = config.reference_table
         if not baseline_table:

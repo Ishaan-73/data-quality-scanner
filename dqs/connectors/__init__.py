@@ -34,9 +34,13 @@ def get_connector(config: ConnectorConfig) -> BaseConnector:
         from dqs.connectors.duckdb_connector import DuckDBConnector
         return DuckDBConnector(config)
 
+    if dialect == "synapse":
+        from dqs.connectors.synapse_connector import SynapseConnector
+        return SynapseConnector(config)
+
     raise ValueError(
         f"Unsupported dialect '{dialect}'. "
-        "Supported: snowflake, bigquery, redshift, databricks, postgres, duckdb"
+        "Supported: snowflake, bigquery, redshift, databricks, postgres, duckdb, synapse"
     )
 
 
