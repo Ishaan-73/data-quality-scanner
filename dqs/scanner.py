@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal, Optional
 
+import os
 import yaml
 
 from dqs.config.models import ScanConfig, ScanReport, ScreenerConfig
@@ -22,6 +23,14 @@ def scan_from_file(
     skip_screener: bool = False,
 ) -> ScanReport:
     raw = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    
+    # Resolve duckdb_path relative to the config file's directory if it is a relative path
+    if "connector" in raw and raw["connector"].get("dialect") == "duckdb":
+        duckdb_path = raw["connector"].get("duckdb_path")
+        if duckdb_path and duckdb_path != ":memory:" and not os.path.isabs(duckdb_path):
+            config_dir = os.path.abspath(os.path.dirname(config_path))
+            raw["connector"]["duckdb_path"] = os.path.abspath(os.path.join(config_dir, duckdb_path))
+            
     config = ScanConfig.model_validate(raw)
 
     if mode:
