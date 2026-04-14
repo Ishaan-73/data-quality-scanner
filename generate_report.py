@@ -15,6 +15,9 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# ── Pre-generated AI column semantics (TPC-DS demo) ──────────────────────
+_sem_path = Path(__file__).parent / "column_semantics_result.json"
+DEMO_SEMANTICS: dict = json.loads(_sem_path.read_text(encoding="utf-8")) if _sem_path.exists() else {}
 
 # ── Layman descriptions for every check ID ────────────────────────────────
 CHECK_PLAIN = {
@@ -290,6 +293,15 @@ def build_html(data: dict, logo_b64: str) -> str:
     logo_tag   = (f'<img src="data:image/png;base64,{logo_b64}" height="44" alt="GovernIQ">'
                   if logo_b64 else '<span style="color:#fff;font-size:22px;font-weight:700">GovernIQ</span>')
 
+    # ── AI Semantics metadata ─────────────────────────────────────────────
+    sem_col_count = sum(
+        len(tdata.get("columns", {}))
+        for tdata in DEMO_SEMANTICS.get("tables", {}).values()
+    )
+    sem_model     = DEMO_SEMANTICS.get("model", "gemini")
+    sem_tables    = len(DEMO_SEMANTICS.get("tables", {}))
+    sem_json      = json.dumps(DEMO_SEMANTICS)
+
     # ── AI Readiness ──────────────────────────────────────────────────────────
     AI_READY_THRESHOLD = 90.0
     gap_to_ready = max(0.0, AI_READY_THRESHOLD - overall)
@@ -557,8 +569,8 @@ def build_html(data: dict, logo_b64: str) -> str:
 
   {pii_html}
 
-  <!-- Top row: AI Readiness card + Hero card -->
-  <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;margin-bottom:22px;align-items:stretch">
+  <!-- Top row: AI Readiness card + Discovery card + Hero card -->
+  <div style="display:grid;grid-template-columns:280px 250px 1fr;gap:20px;margin-bottom:22px;align-items:stretch">
 
     <!-- AI Readiness card (dark navy) -->
     <div style="background:linear-gradient(145deg,#1B3D6F 0%,#2a5298 100%);border-radius:12px;
@@ -582,6 +594,32 @@ def build_html(data: dict, logo_b64: str) -> str:
         onmouseover="this.style.background='rgba(255,255,255,.22)'"
         onmouseout="this.style.background='rgba(255,255,255,.12)'">
         Top 5 Actions to Achieve AI Readiness
+      </button>
+    </div>
+
+    <!-- Discovery Context card (purple → indigo) -->
+    <div style="background:linear-gradient(145deg,#3b1f7a 0%,#1e3a8a 100%);border-radius:12px;
+                padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between;
+                gap:14px;color:#fff;box-shadow:0 4px 24px rgba(59,31,122,.35)">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+                    color:#c4b5fd;margin-bottom:10px">Discovery Context</div>
+        <div style="font-size:13px;line-height:1.65;color:#e0d9ff">
+          Context Intelligence: Gemini has auto-documented
+          <strong style="color:#fff">{sem_col_count} columns</strong>
+          to provide semantic RCA insights.
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:#a78bfa">
+          Model: {sem_model} &nbsp;·&nbsp; {sem_tables} tables indexed
+        </div>
+      </div>
+      <button onclick="openSemanticsModal()"
+        style="background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);
+               color:#fff;border-radius:8px;padding:9px 0;font-size:12px;font-weight:600;
+               cursor:pointer;letter-spacing:.02em;transition:background .15s;width:100%;text-align:center"
+        onmouseover="this.style.background='rgba(255,255,255,.26)'"
+        onmouseout="this.style.background='rgba(255,255,255,.14)'">
+        Explore AI Dictionary →
       </button>
     </div>
 
@@ -696,6 +734,15 @@ def build_html(data: dict, logo_b64: str) -> str:
           <span id="mPlainExample"></span>
         </div>
       </div>
+      <!-- AI Semantic context hint -->
+      <div id="mSemHint" style="display:none;margin-bottom:14px;
+           background:linear-gradient(135deg,rgba(59,31,122,.07),rgba(30,58,138,.07));
+           border-left:4px solid #7c3aed;border-radius:0 8px 8px 0;padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:#7c3aed;letter-spacing:.06em;
+                    text-transform:uppercase;margin-bottom:6px">&#x1F52E; AI Context Hint</div>
+        <div id="mSemHintText" style="font-size:13px;color:#374151;line-height:1.6"></div>
+        <div id="mSemHintMeta" style="font-size:11px;color:#7c3aed;margin-top:6px"></div>
+      </div>
       <div class="detail-grid" id="mGrid"></div>
       <div id="mSqlWrap" style="display:none;margin-top:14px">
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
@@ -703,6 +750,58 @@ def build_html(data: dict, logo_b64: str) -> str:
         <div class="sql-block" id="mSql"></div>
       </div>
       <div class="error-block" id="mError" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AI Column Dictionary Modal -->
+<div id="semOverlay" style="display:none;position:fixed;inset:0;background:rgba(10,15,30,.78);
+     backdrop-filter:blur(6px);z-index:1100;padding:20px;overflow:auto"
+     onclick="if(event.target===this)closeSemModal()">
+  <div style="max-width:980px;margin:40px auto;background:#fff;border-radius:16px;
+              overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45)">
+    <div style="background:linear-gradient(135deg,#3b1f7a,#1e3a8a);padding:20px 26px;
+                display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="color:#c4b5fd;font-size:10px;font-weight:700;letter-spacing:.12em;
+                    text-transform:uppercase">AI Column Dictionary</div>
+        <div style="color:#fff;font-size:17px;font-weight:700;margin-top:4px">
+          Gemini Semantic Documentation
+        </div>
+      </div>
+      <button onclick="closeSemModal()"
+        style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;
+               padding:6px 13px;cursor:pointer;font-size:15px;line-height:1">&#x2715;</button>
+    </div>
+    <div style="padding:14px 26px;border-bottom:1px solid #EEF2F7;background:#F8FAFC">
+      <input id="semSearch" type="text" placeholder="Search by table or column name\u2026"
+             oninput="filterSemTable()"
+             style="width:100%;padding:9px 14px;border:1px solid #D1DCE8;border-radius:8px;
+                    font-size:13px;outline:none;box-sizing:border-box">
+    </div>
+    <div style="overflow:auto;max-height:520px">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#F8FAFC">
+            <th style="padding:10px 16px;text-align:left;color:#9ba8c0;font-size:11px;
+                       font-weight:600;text-transform:uppercase;border-bottom:1px solid #EEF2F7;
+                       position:sticky;top:0;background:#F8FAFC">Table</th>
+            <th style="padding:10px 16px;text-align:left;color:#9ba8c0;font-size:11px;
+                       font-weight:600;text-transform:uppercase;border-bottom:1px solid #EEF2F7;
+                       position:sticky;top:0;background:#F8FAFC">Column</th>
+            <th style="padding:10px 16px;text-align:left;color:#9ba8c0;font-size:11px;
+                       font-weight:600;text-transform:uppercase;border-bottom:1px solid #EEF2F7;
+                       position:sticky;top:0;background:#F8FAFC">Type</th>
+            <th style="padding:10px 16px;text-align:center;color:#9ba8c0;font-size:11px;
+                       font-weight:600;text-transform:uppercase;border-bottom:1px solid #EEF2F7;
+                       position:sticky;top:0;background:#F8FAFC">Confidence</th>
+            <th style="padding:10px 16px;text-align:left;color:#9ba8c0;font-size:11px;
+                       font-weight:600;text-transform:uppercase;border-bottom:1px solid #EEF2F7;
+                       position:sticky;top:0;background:#F8FAFC">Description</th>
+          </tr>
+        </thead>
+        <tbody id="semTableBody"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -747,6 +846,57 @@ const CHECKS      = {checks_json};
 const CHECK_PLAIN = {check_plain_json};
 const HIER        = {hier_json};
 const TOP5        = {top5_json};
+
+// ── AI Column Semantics ──────────────────────────────────────────────────────
+const SEMANTICS = {sem_json};
+const SEM_FLAT  = [];
+Object.entries(SEMANTICS.tables || {{}}).forEach(([tbl, td]) => {{
+  Object.entries(td.columns || {{}}).forEach(([col, cd]) => {{
+    SEM_FLAT.push({{table: tbl, column: col, type: cd.type, confidence: cd.confidence, description: cd.description}});
+  }});
+}});
+
+function confBadge(v) {{
+  const ok  = v >= 90, mid = v >= 75;
+  const bg  = ok ? '#e6f4ea' : mid ? '#fff7e6' : '#fdecea';
+  const cl  = ok ? '#2e7d32' : mid ? '#b45309' : '#c62828';
+  return `<span style="background:${{bg}};color:${{cl}};padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${{v}}%</span>`;
+}}
+
+function renderSemTable(rows) {{
+  const tbody = document.getElementById('semTableBody');
+  if (!rows.length) {{
+    tbody.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:#9ba8c0">No results found</td></tr>';
+    return;
+  }}
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr style="border-bottom:1px solid #F0F4F8;background:${{i % 2 ? '#FAFBFC' : '#fff'}}">
+      <td style="padding:10px 16px;color:#1B3D6F;font-weight:600;font-size:12px">${{r.table}}</td>
+      <td style="padding:10px 16px;font-family:monospace;font-size:12px;color:#374151">${{r.column}}</td>
+      <td style="padding:10px 16px;font-family:monospace;font-size:11px;color:#6b7280">${{r.type || '—'}}</td>
+      <td style="padding:10px 16px;text-align:center">${{confBadge(r.confidence || 0)}}</td>
+      <td style="padding:10px 16px;color:#374151;font-size:13px;line-height:1.5">${{r.description || '—'}}</td>
+    </tr>`).join('');
+}}
+
+function filterSemTable() {{
+  const q = document.getElementById('semSearch').value.toLowerCase();
+  renderSemTable(q ? SEM_FLAT.filter(r =>
+    r.table.toLowerCase().includes(q) || r.column.toLowerCase().includes(q)
+  ) : SEM_FLAT);
+}}
+
+function openSemanticsModal() {{
+  renderSemTable(SEM_FLAT);
+  document.getElementById('semSearch').value = '';
+  document.getElementById('semOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}}
+
+function closeSemModal() {{
+  document.getElementById('semOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}}
 
 // ── AI Readiness modal ──────────────────────────────────────────────────────
 function buildFixHint(t) {{
@@ -972,6 +1122,18 @@ function openModal(idx) {{
     plainEl.style.display = 'none';
   }}
 
+  // AI Semantic context hint
+  const semHint = document.getElementById('mSemHint');
+  const semEntry = SEMANTICS.tables?.[c.table]?.columns?.[c.column] || null;
+  if (semEntry && semEntry.description) {{
+    document.getElementById('mSemHintText').textContent = semEntry.description;
+    document.getElementById('mSemHintMeta').textContent =
+      `Confidence: ${{semEntry.confidence}}%\u2003·\u2003Type: ${{semEntry.type}}`;
+    semHint.style.display = 'block';
+  }} else {{
+    semHint.style.display = 'none';
+  }}
+
   const ps   = ((c.pass_score || 0) * 100).toFixed(1);
   const psColor = ps >= 90 ? '#47A848' : ps >= 70 ? '#F5A623' : '#E53935';
   const status = c.skipped ? '— Skipped' : c.passed ? '✓ Passed' : '✗ Failed';
@@ -1024,7 +1186,9 @@ function closeModal() {{
 document.getElementById('modalOverlay').addEventListener('click', e => {{
   if (e.target === document.getElementById('modalOverlay')) closeModal();
 }});
-document.addEventListener('keydown', e => {{ if (e.key === 'Escape') closeModal(); }});
+document.addEventListener('keydown', e => {{
+  if (e.key === 'Escape') {{ closeModal(); closeReadyModal(); closeSemModal(); }}
+}});
 
 </script>
 </body>
