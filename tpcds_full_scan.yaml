@@ -2,7 +2,7 @@ scan_name: tpcds_dq_scan
 mode: live
 connector:
   dialect: duckdb
-  duckdb_path: test/tpcds_test.duckdb
+  duckdb_path: ../tpcds_test.duckdb
 checks:
 - check_id: 1
   table: store_sales
