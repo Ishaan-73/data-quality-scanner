@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 
 # Copy the entire workspace to ensure DQS package can be loaded normally
 COPY . /app/
+RUN pip install --no-cache-dir .
 
 # Expose FastAPI port
 EXPOSE 8000
