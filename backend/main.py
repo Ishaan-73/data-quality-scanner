@@ -5,6 +5,8 @@ from datetime import datetime
 from typing import Dict, Any
 
 from fastapi import FastAPI, BackgroundTasks, HTTPException, Request
+from test_endpoint import router as debug_router
+
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -40,6 +42,8 @@ Base.metadata.create_all(bind=engine)
 
 # --- FastAPI App ---
 app = FastAPI(title="DQS Orchestrator API")
+app.include_router(debug_router)
+
 
 app.add_middleware(
     CORSMiddleware,
