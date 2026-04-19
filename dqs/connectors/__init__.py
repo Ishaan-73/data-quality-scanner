@@ -38,9 +38,18 @@ def get_connector(config: ConnectorConfig) -> BaseConnector:
         from dqs.connectors.synapse_connector import SynapseConnector
         return SynapseConnector(config)
 
+    if dialect == "sqlserver":
+        from dqs.connectors.sqlserver_connector import SqlServerConnector
+        return SqlServerConnector(config)
+
+    if dialect == "azure_blob":
+        from dqs.connectors.azure_blob_connector import AzureBlobConnector
+        return AzureBlobConnector(config)
+
     raise ValueError(
         f"Unsupported dialect '{dialect}'. "
-        "Supported: snowflake, bigquery, redshift, databricks, postgres, duckdb, synapse"
+        "Supported: snowflake, bigquery, redshift, databricks, postgres, duckdb, "
+        "synapse, sqlserver, azure_blob"
     )
 
 

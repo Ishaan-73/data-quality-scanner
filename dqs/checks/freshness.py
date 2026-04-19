@@ -22,7 +22,7 @@ class FreshnessLagHours(BaseCheck):
         if not ts_col:
             raise ValueError("Check 20 requires 'timestamp_column' in CheckConfig.")
 
-        if dialect == "synapse":
+        if dialect in ("synapse", "sqlserver"):
             # Synapse T-SQL: DATEDIFF does not quote the datepart; uses GETDATE()
             return (
                 f"SELECT DATEDIFF(hour, MAX({ts_col}), GETDATE()) "
@@ -60,7 +60,7 @@ class StaleTableCheck(BaseCheck):
         if not ts_col:
             raise ValueError("Check 21 requires 'timestamp_column' in CheckConfig.")
 
-        if dialect == "synapse":
+        if dialect in ("synapse", "sqlserver"):
             # Synapse T-SQL: DATEADD does not quote the datepart; uses GETDATE()
             return (
                 f"SELECT CASE WHEN MAX({ts_col}) < "
@@ -97,7 +97,7 @@ class LateArrivingDataCheck(BaseCheck):
                 "'load_timestamp_column' in CheckConfig."
             )
 
-        if dialect == "synapse":
+        if dialect in ("synapse", "sqlserver"):
             # Synapse T-SQL: DATEDIFF without quoted datepart
             return (
                 f"SELECT COUNT(CASE WHEN DATEDIFF(hour, {event_col}, {load_col}) > {allowed_hours} "

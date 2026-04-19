@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, model_validator
 class ConnectorConfig(BaseModel):
     """Connection settings for a data warehouse."""
 
-    dialect: Literal["snowflake", "bigquery", "redshift", "databricks", "postgres", "duckdb", "synapse"]
+    dialect: Literal["snowflake", "bigquery", "redshift", "databricks", "postgres", "duckdb", "synapse", "sqlserver", "azure_blob"]
     # Common fields (used across dialects)
     host: Optional[str] = None
     port: Optional[int] = None

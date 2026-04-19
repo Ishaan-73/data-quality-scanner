@@ -24,7 +24,7 @@ class DataTypeConformance(BaseCheck):
         # TRY_CAST is supported in Snowflake, DuckDB, and Synapse (T-SQL).
         # For Synapse, use FLOAT instead of DOUBLE (DOUBLE is not a T-SQL type).
         expected_type = (config.extra or {}).get("expected_type", "DOUBLE")
-        if dialect == "synapse" and expected_type == "DOUBLE":
+        if dialect in ("synapse", "sqlserver") and expected_type == "DOUBLE":
             expected_type = "FLOAT"
         return (
             f"SELECT COUNT(CASE WHEN TRY_CAST({col} AS {expected_type}) IS NULL "
@@ -84,7 +84,7 @@ class FormatValidation(BaseCheck):
         if not col or not pattern:
             raise ValueError("Check 10 requires 'column' and 'pattern' in CheckConfig.")
 
-        if dialect == "synapse":
+        if dialect in ("synapse", "sqlserver"):
             # Synapse / T-SQL does not support REGEXP_LIKE.
             # Use PATINDEX with a T-SQL pattern approximation.
             tsql_pattern = _regex_to_tsql_pattern(pattern)

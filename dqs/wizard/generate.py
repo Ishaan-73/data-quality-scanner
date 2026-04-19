@@ -260,14 +260,27 @@ def _checks_for_table(tbl: dict) -> List[dict]:
                 "condition": rule,
             })
 
-    # Check 23 — Volume change (requires prior_table)
+    # Check 23 — Volume change
     prior = volume.get("prior_table")
     change_pct = volume.get("max_daily_change_pct")
+    partition_col = volume.get("partition_column")     # e.g. "loaded_date"
+    is_partitioned = volume.get("is_date_partitioned", False)
+
     if prior and change_pct is not None:
         checks.append({
             "check_id":           23,
             "today_table":        name,
             "prior_table":        prior,
+            "volume_change_band": change_pct / 100.0,
+        })
+    elif is_partitioned and partition_col and change_pct is not None:
+        # Partition-aware mode: compare today's partition vs. yesterday's partition
+        # within the same table using T-SQL-compatible date expressions.
+        # The condition field is used by Check 23 when no prior_table is given.
+        checks.append({
+            "check_id":           23,
+            "today_table":        name,
+            "condition":          f"{partition_col} = CAST(GETDATE() AS DATE)",
             "volume_change_band": change_pct / 100.0,
         })
 
